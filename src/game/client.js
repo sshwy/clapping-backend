@@ -48,6 +48,9 @@ class Client extends ClientClass {
   handleRegisterRoomFailed () {
     // to do
   }
+  handleGamePrepare () {
+    this.socket.emit('clear draw log');
+  }
   roomEmit (...args) {
     assert(this.player.room);
     this.socket.to(this.player.room.id.toString()).emit(...args);

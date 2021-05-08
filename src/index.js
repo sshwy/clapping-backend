@@ -19,6 +19,10 @@ roomStore.createRoom(8964);
 roomStore.createRoom(250);
 roomStore.createRoom(80000000);
 
+const isVaildUsername = name => {
+  return name.length && name.length <= 20 && name.trim();
+}
+
 io.use((socket, next) => { // persistent session
   const sessionID = socket.handshake.auth.sessionID;
   if (sessionID) {
@@ -33,7 +37,7 @@ io.use((socket, next) => { // persistent session
   }
 
   const username = socket.handshake.auth.username;
-  if (!username) return next(new Error("invalid username"));
+  if(isVaildUsername(username) == false) return next(new Error("invalid username"));
 
   // create new session
   socket.sessionID = randomId();
@@ -100,6 +104,10 @@ io.on("connection", (socket) => {
       playerStore.deletePlayer(socket.userID);
       socket.emit('finish logout');
     }
+  });
+
+  socket.on('room list update', () => {
+    client.handleRoomListDisplay();
   });
 
   socket.onAny((event, ...args) => {

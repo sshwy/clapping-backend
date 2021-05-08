@@ -19,6 +19,7 @@ class Room extends RoomClass {
   getInfo () {
     return {
       id: this.id,
+      turn: this.turn,
       players: this.players.map(e => ({
         id: e.data.id,
         name: e.data.name,
@@ -62,7 +63,7 @@ class Room extends RoomClass {
    */
   ready () {
     assert(this.stat === RoomStatus.PREPARING);
-    return this.players.every(e => e.ready);
+    return this.players.every(e => e.stat === PlayerStatus.READY);
   }
   startGame () {
     const runTurn = async () => {

@@ -11,7 +11,6 @@ class PlayerClass { /* abstraction */
       movePoint: 0,
       movement: [],
     };
-    this.ready = false;
   }
   /**
    * @param {{prevStat: number, nextStat: number, data: any, from: string}}

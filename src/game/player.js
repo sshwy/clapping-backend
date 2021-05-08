@@ -52,7 +52,11 @@ class Player extends PlayerClass {
     assert(this.stat == prevStat);
     this.stat = nextStat;
 
-    if (nextStat === PlayerStatus.SUBMITED) {
+    if (data === 'game prepare') {
+      assert(data === 'game prepare');
+      this.data.movePoint = 0;
+      this.client.handleGamePrepare();
+    } else if (nextStat === PlayerStatus.SUBMITED) {
       assert(from === 'client');
       this.log.info(`emit ${MoveName[data.move]}, target: ${data.target}`);
       this.room.handleMovement({
@@ -82,14 +86,12 @@ class Player extends PlayerClass {
     if (data === 'ready') { // do nothing
       assert(this.room);
       this.log.info(`ready.`);
-      this.ready = true;
       this.room.handleEvent('player ready');
     }
     if (data === 'cancel ready') { // do nothing
       assert(this.room);
       this.log.info(`not ready.`);
       this.stat = PlayerStatus.ROOMED;
-      this.ready = false;
       this.room.handleEvent('player cancel ready');
     }
     if (data === 'finish drawing') {
@@ -125,12 +127,16 @@ class Player extends PlayerClass {
     });
   }
   gamePrepare () {
-    assert(this.stat === PlayerStatus.READY);
-    this.stat = PlayerStatus.LISTENING;
-    this.data.movePoint = 0;
+    this.handleEvent({
+      prevStat: PlayerStatus.READY,
+      nextStat: PlayerStatus.LISTENING,
+      data: 'game prepare',
+      from: 'roomer',
+    });
   }
   quitGame () {
-    this.stat = PlayerStatus.READY;
+    this.log.info('Quit Game');
+    this.stat = PlayerStatus.ROOMED;
   }
   getId () {
     return this.data.id;
