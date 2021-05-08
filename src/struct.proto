@@ -1,0 +1,46 @@
+// compile: protoc --js_out=import_style=commonjs,binary:. struct.proto
+
+syntax = "proto3";
+
+enum Move {
+  CLAP = 0;
+  DEFEND = 1;
+  STRONG_DEFEND = 2;
+  SHOOT = 3;
+  SLASH = 4;
+  LIGHTNING_STRIKE = 5;
+  EARTHQUAKE = 6;
+  SWEEP_I = 7;
+  SWEEP_II = 8;
+  SWEEP_III = 9;
+  LIGHTNING_STORM = 10;
+  THORNS_I = 11;
+  THORNS_II = 12;
+  THORNS_III = 13;
+  LIGHTNING_ARRESTER = 14;
+}
+
+enum RoomStatus {
+  PREPARING = 0;
+  PLAYING = 1;
+}
+
+message Movement { // always send from client to server
+  Move move = 1;
+  string target = 2; // targetId of player
+}
+
+message Player {
+  string name = 1;
+  string id = 2;
+  int32 move_point = 3;
+  repeated Movement movement = 4;
+}
+
+message Status { // always request from server
+  Player self = 1;
+  int32 room_id = 2;
+  int32 turn = 3;
+  repeated Player player = 4;
+}
+
