@@ -29,6 +29,9 @@ class Client extends ClientClass {
         data: 'finish drawing'
       });
     });
+    this.socket.on('watcher finish draw', () => {
+      // do nothing
+    });
   }
   handleRequestMovement () {
     this.socket.emit('request movement', this.player.getStatus());

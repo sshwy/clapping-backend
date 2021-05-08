@@ -52,6 +52,15 @@ class Player extends PlayerClass {
     assert(this.stat == prevStat);
     this.stat = nextStat;
 
+    if (data?.event_name === 'watcher draw') {
+      assert(from === 'roomer');
+      this.log.info('drawing');
+      this.tmp_storage = {
+        ...data,
+        status: this.getStatus()
+      };
+      this.client.handleDrawing(this.tmp_storage);
+    }
     if (data === 'game prepare') {
       assert(data === 'game prepare');
       this.data.movePoint = 0;
@@ -72,10 +81,10 @@ class Player extends PlayerClass {
       this.client.handleSubmitted(this.tmp_storage);
     } else if (nextStat === PlayerStatus.DRAWING) {
       assert(from === 'roomer');
-      this.applyMovement(data[this.data.id]);
+      this.applyMovement(data.movement_map[this.data.id]);
       this.log.info('drawing');
       this.tmp_storage = {
-        movement_map: data,
+        ...data,
         status: this.getStatus()
       };
       this.client.handleDrawing(this.tmp_storage);

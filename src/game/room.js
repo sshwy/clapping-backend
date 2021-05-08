@@ -112,12 +112,30 @@ class Room extends RoomClass {
         }
       };
 
+      const deadPlayers = this.alive_players.filter((player, i) => calcRealInjury(i) > eps * 0.1);
+
       this.alive_players.forEach(player => {
         player.handleEvent({
           prevStat: PlayerStatus.SUBMITED,
           nextStat: PlayerStatus.DRAWING,
           from: 'roomer',
-          data: movement_map,
+          data: {
+            movement_map: movement_map,
+            deads: deadPlayers.map(e => e.getStatus()),
+          },
+        });
+      });
+
+      this.players.filter(e => e.stat === PlayerStatus.WATCHING).forEach(player => {
+        player.handleEvent({
+          prevStat: PlayerStatus.WATCHING,
+          nextStat: PlayerStatus.WATCHING,
+          from: 'roomer',
+          data: {
+            event_name: 'watcher draw',
+            movement_map: movement_map,
+            deads: deadPlayers.map(e => e.getStatus()),
+          },
         });
       });
 
@@ -133,13 +151,11 @@ class Room extends RoomClass {
       this.log.info('Waiting for drawing...');
       await waiter;
 
-      const nextRoundPlayers = this.alive_players.filter((player, i) => {
-        if (calcRealInjury(i) > eps * 0.1) {
-          player.dead();
-          return false;
-        }
-        return true;
-      });
+      const nextRoundPlayers = this.alive_players.filter((player, i) => !(calcRealInjury(i) > eps * 0.1));
+
+      deadPlayers.forEach(player => {
+        player.dead();
+      })
 
       this.alive_players = nextRoundPlayers;
     };
