@@ -20,7 +20,7 @@ roomStore.createRoom(250);
 roomStore.createRoom(80000000);
 
 const isVaildUsername = name => {
-  return name.length && name.length <= 20 && name.trim();
+  return name.length && name.length <= 15 && name.trim();
 }
 
 io.use((socket, next) => { // persistent session
