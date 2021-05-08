@@ -18,7 +18,10 @@ class Client extends ClientClass {
         prevStat: PlayerStatus.ACTING,
         nextStat: PlayerStatus.SUBMITED,
         from: 'client',
-        data,
+        data: {
+          event_name: 'response movement',
+          movement: data,
+        },
       });
     });
     this.socket.on('finish draw', () => {
@@ -26,7 +29,9 @@ class Client extends ClientClass {
         prevStat: PlayerStatus.DRAWING,
         nextStat: PlayerStatus.LISTENING,
         from: 'client',
-        data: 'finish drawing'
+        data: {
+          event_name: 'finish drawing'
+        },
       });
     });
     this.socket.on('watcher finish draw', () => {

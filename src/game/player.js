@@ -52,7 +52,7 @@ class Player extends PlayerClass {
     assert(this.stat == prevStat);
     this.stat = nextStat;
 
-    if (data?.event_name === 'watcher draw') {
+    if (data.event_name === 'watcher draw') {
       assert(from === 'roomer');
       this.log.info('drawing');
       this.tmp_storage = {
@@ -61,25 +61,7 @@ class Player extends PlayerClass {
       };
       this.client.handleDrawing(this.tmp_storage);
     }
-    if (data === 'game prepare') {
-      assert(data === 'game prepare');
-      this.data.movePoint = 0;
-      this.client.handleGamePrepare();
-    } else if (nextStat === PlayerStatus.SUBMITED) {
-      assert(from === 'client');
-      this.log.info(`emit ${MoveName[data.move]}, target: ${data.target}`);
-      this.room.handleMovement({
-        from: this.data.id,
-        data,
-      });
-      this.client.roomEmit('room info ingame', this.room.getInfo());
-      this.tmp_storage = {
-        from: this.data.name,
-        to: this.room.alive_players.find(e => e.data.id === data.target)?.data.name,
-        move: data.move
-      };
-      this.client.handleSubmitted(this.tmp_storage);
-    } else if (nextStat === PlayerStatus.DRAWING) {
+    if (data.event_name === 'player draw') {
       assert(from === 'roomer');
       this.applyMovement(data.movement_map[this.data.id]);
       this.log.info('drawing');
@@ -88,24 +70,44 @@ class Player extends PlayerClass {
         status: this.getStatus()
       };
       this.client.handleDrawing(this.tmp_storage);
-    } else if (nextStat === PlayerStatus.ACTING) {
-      assert(from === 'roomer' && data === 'request movement');
+    }
+    if (data.event_name === 'request movement') {
+      assert(from === 'roomer');
       this.client.handleRequestMovement();
     }
-    if (data === 'ready') { // do nothing
+    if (data.event_name === 'response movement') {
+      assert(from === 'client');
+      const movement = data.movement;
+      this.log.info(`emit ${MoveName[movement.move]}, target: ${movement.target}`);
+      this.room.handleMovement({
+        from: this.data.id,
+        data: movement,
+      });
+      this.client.roomEmit('room info ingame', this.room.getInfo());
+      this.tmp_storage = {
+        from: this.data.name,
+        to: this.room.alive_players.find(e => e.data.id === movement.target)?.data.name,
+        move: movement.move
+      };
+      this.client.handleSubmitted(this.tmp_storage);
+    }
+    if (data.event_name === 'finish drawing') {
+      this.log.info('finish drawing');
+    }
+    if (data.event_name === 'ready') { // do nothing
       assert(this.room);
       this.log.info(`ready.`);
       this.room.handleEvent('player ready');
     }
-    if (data === 'cancel ready') { // do nothing
+    if (data.event_name === 'cancel ready') { // do nothing
       assert(this.room);
       this.log.info(`not ready.`);
       this.stat = PlayerStatus.ROOMED;
       this.room.handleEvent('player cancel ready');
     }
-    if (data === 'finish drawing') {
-      this.log.info('finish drawing');
-      // this.room.handleFinishDrawing({ from: this.data.id });
+    if (data.event_name === 'game prepare') {
+      this.data.movePoint = 0;
+      this.client.handleGamePrepare();
     }
   }
   getStatus () {
@@ -123,7 +125,9 @@ class Player extends PlayerClass {
     this.handleEvent({
       prevStat: PlayerStatus.ROOMED,
       nextStat: PlayerStatus.READY,
-      data: 'ready',
+      data: {
+        event_name: 'ready'
+      },
       from: 'client'
     });
   }
@@ -131,7 +135,9 @@ class Player extends PlayerClass {
     this.handleEvent({
       prevStat: PlayerStatus.READY,
       nextStat: PlayerStatus.ROOMED,
-      data: 'cancel ready',
+      data: {
+        event_name: 'cancel ready'
+      },
       from: 'client'
     });
   }
@@ -139,7 +145,9 @@ class Player extends PlayerClass {
     this.handleEvent({
       prevStat: PlayerStatus.READY,
       nextStat: PlayerStatus.LISTENING,
-      data: 'game prepare',
+      data: {
+        event_name: 'game prepare'
+      },
       from: 'roomer',
     });
   }

@@ -120,6 +120,7 @@ class Room extends RoomClass {
           nextStat: PlayerStatus.DRAWING,
           from: 'roomer',
           data: {
+            event_name: 'player draw',
             movement_map: movement_map,
             deads: deadPlayers.map(e => e.getStatus()),
           },
@@ -189,32 +190,30 @@ class Room extends RoomClass {
           this.players.forEach(e => e.quitGame());
           this.players[0].client.roomEmit('room info', this.getInfo());
           resolve('ok');
-        }, 5000);
+        }, 3000);
       })();
     });
   }
-  handleMovement ({
-    from,
-    data
-  }) {
-    // console.log(from, data, this.alive_players);
-    this._response_counter++;
+  handleMovement ({ from, data }) {
+    this._response_rest_counter--;
     this._response[this.alive_players.findIndex(e => e.data.id === from)] = data;
   }
   requestMovement () {
     this._response = new Array(this.alive_players.length);
-    this._response_counter = 0;
+    this._response_rest_counter = this.alive_players.length;
 
     return new Promise((resolve, reject) => {
       this.alive_players.forEach(e => e.handleEvent({
         prevStat: PlayerStatus.LISTENING,
         nextStat: PlayerStatus.ACTING,
         from: 'roomer',
-        data: 'request movement',
+        data: {
+          event_name: 'request movement'
+        },
       }));
       this.alive_players[0].client.roomEmit('room info ingame', this.getInfo());
       const checker = setInterval(() => {
-        if (this._response_counter === this.alive_players.length) {
+        if (this._response_rest_counter === 0) {
           clearInterval(checker);
           resolve(this._response);
         }
