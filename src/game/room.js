@@ -20,6 +20,7 @@ class Room extends RoomClass {
     return {
       id: this.id,
       turn: this.turn,
+      leader: this.leader,
       players: this.players.map(e => ({
         id: e.data.id,
         name: e.data.name,
@@ -48,6 +49,9 @@ class Room extends RoomClass {
       assert(this.players.every(e => e.getId() !== player.getId()));
       this.log.info(`Register player [${player.data.name}]`);
       this.players.push(player);
+      if (this.leader === "") {
+        this.leader = player.data.id;
+      }
       player.registerRoom(this);
       resolve('ok');
     });
@@ -56,6 +60,13 @@ class Room extends RoomClass {
     assert(this.stat === RoomStatus.PREPARING);
     this.log.info(`Unregister player [${player.data.name}]`);
     this.players = this.players.filter(e => e.getId() !== player.getId());
+    if (this.leader === player.data.id) {
+      if (this.players.length) {
+        this.leader = this.players[0].data.id;
+      } else {
+        this.leader = "";
+      }
+    }
     player.unregisterRoom();
   }
   /**

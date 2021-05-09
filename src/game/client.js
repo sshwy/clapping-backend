@@ -47,13 +47,15 @@ class Client extends ClientClass {
   handleDrawing (data) {
     this.socket.emit('draw', data);
   }
-  handleRoomListDisplay () {
-    this.socket.emit('room list', roomStore.getAll().map(room => room.getInfo()));
+  handleRoomListDisplay (is_update = false) {
+    if(is_update) this.socket.emit('room list update', roomStore.getAll().map(room => room.getInfo()));
+    else this.socket.emit('room list', roomStore.getAll().map(room => room.getInfo()));
   }
   handleSubmitted () {
     this.socket.emit('submitted movement', this.player.tmp_storage);
   }
   handleRegisterRoomFailed () {
+    this.socket.emit('display message', 'info', '房间正在游戏中，请稍候再加入～');
     // to do
   }
   handleGamePrepare () {

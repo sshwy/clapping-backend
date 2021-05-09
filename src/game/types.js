@@ -60,6 +60,8 @@ class RoomClass {
     this.id = id;
     /** @type {Array<PlayerClass>} */
     this.players = [];
+    /** @type {string} */
+    this.leader = "";
   }
   getInfo () {}
   handleEvent (event) { }
