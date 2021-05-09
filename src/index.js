@@ -104,7 +104,7 @@ io.on("connection", (socket) => {
       playerStore.deletePlayer(socket.userID);
       socket.emit('finish logout');
     } else {
-      client.socket.emit('display message', 'error', '你TM注销个毛线，先给爷退房再说');
+      client.socket.emit('display message', 'error', '你 TM 注销个毛线，先给爷退房再说');
     }
   });
 
