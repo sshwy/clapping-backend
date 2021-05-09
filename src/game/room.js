@@ -172,7 +172,7 @@ class Room extends RoomClass {
           data: {
             event_name: 'watcher draw',
             movement_map: movement_map,
-            deads: deadPlayers.map(e => e.getStatus()),
+            logs: newLogs,
           },
         });
       });

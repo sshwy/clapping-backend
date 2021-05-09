@@ -129,7 +129,12 @@ io.on("connection", (socket) => {
       room.unregisterPlayer(targetPlayer);
       targetPlayer.client.socket.to(room.id.toString()).emit('room info', room.getInfo());
       targetPlayer.client.reHandle();
+      targetPlayer.client.socket.emit('display message', 'info', '你好像被房主踢了……');
     }
+  });
+
+  socket.on('talk', text => {
+    client.handleTalk(text);
   });
 
   socket.onAny((event, ...args) => {
