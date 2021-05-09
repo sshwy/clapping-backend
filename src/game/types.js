@@ -64,7 +64,9 @@ class RoomClass {
     this.leader = "";
     /**
      * @type {Array<{ id: string, type: 'move',  from: string,  to?: string, move: number, turn: number }
-        |{ id: string, type: 'die',  die: string, turn: number }>} data
+        |{ id: string, type: 'die',  die: string, turn: number }
+        |{ id: string, type: 'msg',  text: string, turn: number }
+        |{ id: string, type: 'win',  win: string, turn: number }>} data
      */
     this.battleLogList = [];
   }
@@ -82,7 +84,9 @@ class RoomClass {
   unregisterPlayer (player) { }
   /**
    * @param {{ id: string, type: 'move',  from: string,  to?: string, move: number, turn: number }
-      |{ id: string, type: 'die',  die: string, turn: number }} data
+      |{ id: string, type: 'die',  die: string, turn: number }
+      |{ id: string, type: 'msg',  text: string, turn: number }
+      |{ id: string, type: 'win',  win: string, turn: number }} data
    * @memberof PlayerClass
    */
   addBattleLog (...list) {

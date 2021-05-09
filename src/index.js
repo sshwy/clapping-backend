@@ -1,4 +1,3 @@
-const crypto = require("crypto");
 const httpServer = require("http").createServer();
 const io = require("socket.io")(httpServer, {
   cors: {
@@ -10,8 +9,7 @@ const sessionStore = require('./sessionStore');
 const { playerStore, roomStore } = require('./manager');
 const Client = require("./game/client");
 const { PlayerStatus } = require("./vars");
-
-const randomId = () => crypto.randomBytes(8).toString("hex");
+const { randomId } = require("./utils");
 
 roomStore.createRoom(114514);
 roomStore.createRoom(1919810);

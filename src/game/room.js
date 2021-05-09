@@ -1,6 +1,6 @@
 const { RoomStatus, Move, PlayerStatus } = require('../vars');
 const logg = require('../logger');
-const { assert } = require('../utils');
+const { assert, randomId } = require('../utils');
 const { calcEffect, eps } = require('./logic');
 const { RoomClass, PlayerClass } = require('./types');
 
@@ -126,6 +126,7 @@ class Room extends RoomClass {
       };
 
       const deadPlayers = this.alive_players.filter((player, i) => calcRealInjury(i) > eps * 0.1);
+      const nextRoundPlayers = this.alive_players.filter((player, i) => !(calcRealInjury(i) > eps * 0.1));
 
       const appendLog = this.alive_players.map(e => e.data).map((e, idx, arr) => {
         const mv = movement_map[e.id];
@@ -133,6 +134,7 @@ class Room extends RoomClass {
           ? arr.filter((e) => e.id === mv.target)[0].name
           : "";
         return {
+          type: 'move',
           id: `move-${e.id}-${mv.move}-${tar}-${this.turn}`,
           from: e.name,
           move: mv.move,
@@ -142,6 +144,7 @@ class Room extends RoomClass {
       });
       const deads = deadPlayers.map(e => e.getStatus()).map((e) => {
         return {
+          type: 'die',
           id: `die-${e.self.id}-${this.turn}`,
           die: e.self.name,
           turn: this.turn,
@@ -149,6 +152,25 @@ class Room extends RoomClass {
       });
 
       const newLogs = [...deads, ...appendLog];
+
+      if(nextRoundPlayers.length === 1) {
+        const winner = nextRoundPlayers[0];
+        newLogs.unshift({
+          type: 'win',
+          id: `win-${winner.data.id}-${this.turn}`,
+          die: winner.data.name,
+          turn: this.turn,
+        });
+      } else if(nextRoundPlayers.length === 0) {
+        newLogs.unshift({
+          type: 'msg',
+          id: `message-${randomId()}-${this.turn}`,
+          text: '全部木大（憨笑）',
+          turn: this.turn,
+        });
+        // to do
+      }
+
       this.addBattleLog(...newLogs);
 
       this.alive_players.forEach(player => {
@@ -189,7 +211,6 @@ class Room extends RoomClass {
       this.log.info('Waiting for drawing...');
       await waiter;
 
-      const nextRoundPlayers = this.alive_players.filter((player, i) => !(calcRealInjury(i) > eps * 0.1));
 
       deadPlayers.forEach(player => {
         player.dead();
