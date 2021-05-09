@@ -25,6 +25,7 @@ class Room extends RoomClass {
         id: e.data.id,
         name: e.data.name,
         stat: e.stat,
+        point: e.data.movePoint,
       })),
     };
   }

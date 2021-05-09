@@ -59,7 +59,7 @@ class Client extends ClientClass {
     // to do
   }
   handleGamePrepare () {
-    this.socket.emit('clear draw log');
+    this.socket.emit('game prepare');
   }
   roomEmit (...args) {
     assert(this.player.room);
@@ -72,9 +72,17 @@ class Client extends ClientClass {
   reHandle () {
     this.log.info(`invoke rehandle (stat: ${this.player.stat})`);
     assert(this.player);
-    if (this.player.stat !== PlayerStatus.INITIALIZED) {
-      assert(this.player.room);
-      this.socket.emit('room info', this.player.room.getInfo());
+    switch(this.player.stat) {
+      case PlayerStatus.ROOMED:
+      case PlayerStatus.READY:
+        assert(this.player.room);
+        this.socket.emit('room info', this.player.room.getInfo());
+        break;
+      case PlayerStatus.INITIALIZED:
+        break;
+      default: // gaming
+        assert(this.player.room);
+        this.socket.emit('room info ingame', this.player.room.getInfo());
     }
     if (this.player.stat === PlayerStatus.INITIALIZED) {
       this.handleRoomListDisplay();
