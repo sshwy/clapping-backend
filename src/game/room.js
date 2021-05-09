@@ -21,6 +21,7 @@ class Room extends RoomClass {
       id: this.id,
       turn: this.turn,
       leader: this.leader,
+      battle_log: this.battleLogList,
       players: this.players.map(e => ({
         id: e.data.id,
         name: e.data.name,
@@ -126,6 +127,30 @@ class Room extends RoomClass {
 
       const deadPlayers = this.alive_players.filter((player, i) => calcRealInjury(i) > eps * 0.1);
 
+      const appendLog = this.alive_players.map(e => e.data).map((e, idx, arr) => {
+        const mv = movement_map[e.id];
+        const tar = mv.target
+          ? arr.filter((e) => e.id === mv.target)[0].name
+          : "";
+        return {
+          id: `move-${e.id}-${mv.move}-${tar}-${this.turn}`,
+          from: e.name,
+          move: mv.move,
+          to: tar,
+          turn: this.turn,
+        };
+      });
+      const deads = deadPlayers.map(e => e.getStatus()).map((e) => {
+        return {
+          id: `die-${e.self.id}-${this.turn}`,
+          die: e.self.name,
+          turn: this.turn,
+        };
+      });
+
+      const newLogs = [...deads, ...appendLog];
+      this.addBattleLog(...newLogs);
+
       this.alive_players.forEach(player => {
         player.handleEvent({
           prevStat: PlayerStatus.SUBMITED,
@@ -134,7 +159,7 @@ class Room extends RoomClass {
           data: {
             event_name: 'player draw',
             movement_map: movement_map,
-            deads: deadPlayers.map(e => e.getStatus()),
+            logs: newLogs,
           },
         });
       });
@@ -179,6 +204,7 @@ class Room extends RoomClass {
         assert(this.stat === RoomStatus.PREPARING);
         this.log.info(`Game start`);
         this.stat = RoomStatus.PLAYING;
+        this.battleLogList = [];
         this.turn = 0;
         /** @type {Array<PlayerClass>} */
         this.alive_players = this.players;

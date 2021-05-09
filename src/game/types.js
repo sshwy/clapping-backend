@@ -1,6 +1,6 @@
 
 /**
- * @class RoomClass
+ * @class PlayerClass
  * @param {{name: string, id: string}}
  */
 class PlayerClass { /* abstraction */
@@ -21,8 +21,8 @@ class PlayerClass { /* abstraction */
     data,
     from,
   }) { }
-  getStatus () {}
-  getId () {}
+  getStatus () { }
+  getId () { }
   /**
    * @param {RoomClass} room
    * @memberof PlayerClass
@@ -36,7 +36,7 @@ class PlayerClass { /* abstraction */
 }
 
 /**
- * @class RoomClass
+ * @class ClientClass
  */
 class ClientClass {
   constructor({
@@ -47,8 +47,8 @@ class ClientClass {
     /** @member {PlayerClass} */
     this.player = player;
   }
-  roomEmit (...args) {}
-  reHandle () {}
+  roomEmit (...args) { }
+  reHandle () { }
 }
 
 /**
@@ -62,8 +62,13 @@ class RoomClass {
     this.players = [];
     /** @type {string} */
     this.leader = "";
+    /**
+     * @type {Array<{ id: string, type: 'move',  from: string,  to?: string, move: number, turn: number }
+        |{ id: string, type: 'die',  die: string, turn: number }>} data
+     */
+    this.battleLogList = [];
   }
-  getInfo () {}
+  getInfo () { }
   handleEvent (event) { }
   /**
    * @param {PlayerClass} player
@@ -75,6 +80,14 @@ class RoomClass {
    * @memberof RoomClass
    */
   unregisterPlayer (player) { }
+  /**
+   * @param {{ id: string, type: 'move',  from: string,  to?: string, move: number, turn: number }
+      |{ id: string, type: 'die',  die: string, turn: number }} data
+   * @memberof PlayerClass
+   */
+  addBattleLog (...list) {
+    this.battleLogList.unshift(...list);
+  }
 }
 
 module.exports = {

@@ -65,10 +65,7 @@ class Player extends PlayerClass {
       assert(from === 'roomer');
       this.applyMovement(data.movement_map[this.data.id]);
       this.log.info('drawing');
-      this.tmp_storage = {
-        ...data,
-        status: this.getStatus()
-      };
+      this.tmp_storage = data;
       this.client.handleDrawing(this.tmp_storage);
     }
     if (data.event_name === 'request movement') {
