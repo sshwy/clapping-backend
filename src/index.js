@@ -1,22 +1,11 @@
+const { io } = require('./server');
 const game_list = require('./game');
-const httpServer = require("http").createServer();
-const io = require("socket.io")(httpServer, {
-  cors: {
-    origin: "http://192.168.110.228:8080",
-  },
-});
 
 const sessionStore = require('./sessionStore');
 const { playerStore, roomStore } = require('./manager');
 const Client = require("./client");
 const { PlayerStatus } = require("./vars");
 const { randomId } = require("./utils");
-
-roomStore.createRoom(114514);
-roomStore.createRoom(1919810);
-roomStore.createRoom(8964);
-roomStore.createRoom(250);
-roomStore.createRoom(80000000);
 
 const parseUsername = name => {
   try {
@@ -28,6 +17,12 @@ const parseUsername = name => {
     return false;
   }
 }
+
+roomStore.createRoom(114514);
+roomStore.createRoom(1919810);
+roomStore.createRoom(8964);
+roomStore.createRoom(250);
+roomStore.createRoom(80000000);
 
 io.use((socket, next) => { // persistent session
   const sessionID = socket.handshake.auth.sessionID;
@@ -165,8 +160,3 @@ io.on("connection", (socket) => {
     console.log('[event]', event, args);
   });
 });
-
-
-httpServer.listen(3000, () =>
-  console.log(`server listening at http://localhost:${3000}`)
-);
