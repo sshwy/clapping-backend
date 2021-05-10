@@ -207,7 +207,9 @@ class GameClass {
   constructor(config) {
     this.config = config;
   }
-  calculateEffect () { }
+  getName () {
+    return this.config.name;
+  }
   getMovementById (...args) {
     return this.config.movement_group.getMovementById(...args);
   }
@@ -217,6 +219,7 @@ class GameClass {
       movement_group: this.config.movement_group.toJSONObject(),
     };
   }
+  calculateEffect () { }
 };
 
 module.exports = {

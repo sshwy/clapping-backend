@@ -44,7 +44,7 @@ class Room extends RoomClass {
     } else if (event.event_name === 'choose game') {
       this.game = game_list[event.game_id];
     }
-    if(cb !== undefined) cb ();
+    if (cb !== undefined) cb();
   }
   registerPlayer (player) {
     return new Promise((resolve, reject) => {

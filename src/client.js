@@ -46,7 +46,7 @@ class Client extends ClientClass {
         event_name: 'choose game',
         game_id: game_id,
       }, () => {
-        this.socket.emit('display message', 'success', '成功选择游戏～');
+        this.socket.emit('display message', 'success', `成功选择游戏 ${this.player.room.game.getName()}`);
       });
     });
   }

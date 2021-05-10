@@ -239,7 +239,7 @@ class Game extends GameClass {
 const list = MoveData.map(e => new Movement(e));
 const grp = new MovementGroup(list, null);
 const game = new Game({
-  name: 'Classic Clapping Game',
+  name: 'Clapping Game: Classic',
   movement_group: grp
 });
 
