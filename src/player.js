@@ -1,7 +1,7 @@
 const { assert } = require('./utils');
 
 const logg = require('./logger');
-const { Move, PlayerStatus, MoveName } = require('./vars');
+const { PlayerStatus, MoveName } = require('./vars');
 const { PlayerClass, ClientClass, RoomClass } = require('./types');
 
 /**
@@ -63,7 +63,7 @@ class Player extends PlayerClass {
     }
     if (data.event_name === 'player draw') {
       assert(from === 'roomer');
-      this.applyMovement(data.movement_map[this.data.id]);
+      this.applyMovement(data.movement_map[this.getId()]);
       this.log.info('drawing');
       this.tmp_storage = data;
       this.client.handleDrawing(this.tmp_storage);
@@ -171,48 +171,13 @@ class Player extends PlayerClass {
   getId () {
     return this.data.id;
   }
-  addMovePoint () {
-    this.data.movePoint++;
-  }
-  decMovePoint (cnt) {
-    this.data.movePoint -= cnt;
+  addMovePoint (cnt) {
+    this.data.movePoint += cnt;
+    this.log.info(`gain ${cnt} move point`);
   }
   applyMovement (move) {
     this.data.movement.push(move);
-    switch (move.move) {
-      case Move.CLAP:
-        this.addMovePoint();
-        this.log.info(`gain 1 move point`);
-        return;
-      case Move.DEFEND:
-        return;
-      case Move.STRONG_DEFEND:
-      case Move.SWEEP_I:
-      case Move.THORNS_I:
-      case Move.SHOOT:
-      case Move.LIGHTNING_ARRESTER:
-        this.decMovePoint(1);
-        this.log.info(`lose 1 move point`);
-        return;
-      case Move.SWEEP_II:
-      case Move.THORNS_II:
-      case Move.SLASH:
-        this.decMovePoint(2);
-        this.log.info(`lose 2 move point`);
-        return;
-      case Move.SWEEP_III:
-      case Move.THORNS_III:
-      case Move.LIGHTNING_STRIKE:
-        this.decMovePoint(3);
-        this.log.info(`lose 3 move point`);
-        return;
-      case Move.LIGHTNING_STORM:
-      case Move.EARTHQUAKE:
-        this.decMovePoint(4);
-        this.log.info(`lose 4 move point`);
-        return;
-    }
-    throw new Error('unknown movement');
+    this.addMovePoint(move.delta_point);
   }
   onTerminate (signal) {
     assert(this.stat == PlayerStatus.LISTENING);

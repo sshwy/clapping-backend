@@ -4,7 +4,7 @@ const eps = 0.01;
 
 const MoveData = [{
   id: 0, tags: ['老八秘制小汉堡'],
-  title: '拍手', point: 0, attack: 0, defend: 0,
+  title: '拍手', point: -1, attack: 0, defend: 0,
   description: '增加一点行动力。',
   background_color: '#8bc34a', background_color_hover: '#689f38'
 }, {
@@ -196,6 +196,7 @@ class Game extends GameClass {
         filtered_injury: 0,
         hit: [],
         hitted: [],
+        delta_point: -this.getMovementById(i.move).getPoint(),
       };
       player_movements.forEach(j => {
         const mi = this.getMovementById(i.move);

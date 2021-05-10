@@ -123,6 +123,7 @@ class Room extends RoomClass {
           type: 'die',
           id: `die-${e.self.id}-${this.turn}`,
           die: e.self.name,
+          by: data[e.self.id].hitted.map(id => this.alive_players.find(e => e.getId() === id).data.name),
           turn: this.turn,
         };
       });
@@ -134,7 +135,7 @@ class Room extends RoomClass {
         newLogs.unshift({
           type: 'win',
           id: `win-${winner.data.id}-${this.turn}`,
-          die: winner.data.name,
+          win: winner.data.name,
           turn: this.turn,
         });
       } else if (nextRoundPlayers.length === 0) {
