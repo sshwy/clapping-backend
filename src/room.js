@@ -13,6 +13,7 @@ class Room extends RoomClass {
     super(id);
 
     this.game = game_list[0];
+    this.game_id = 0;
     this.stat = RoomStatus.PREPARING;
     this.log = logg.getLogger(`Room ${id}`);
     this.log.info('Created.');
@@ -23,6 +24,7 @@ class Room extends RoomClass {
       turn: this.turn,
       leader: this.leader,
       battle_log: this.battleLogList,
+      game_id: this.game_id,
       players: this.players.map(e => ({
         id: e.data.id,
         name: e.data.name,
@@ -43,6 +45,7 @@ class Room extends RoomClass {
       // do nothing.
     } else if (event.event_name === 'choose game') {
       this.game = game_list[event.game_id];
+      this.game_id = event.game_id;
     }
     if (cb !== undefined) cb();
   }

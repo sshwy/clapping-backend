@@ -47,6 +47,8 @@ class Client extends ClientClass {
         game_id: game_id,
       }, () => {
         this.socket.emit('display message', 'success', `成功选择游戏 ${this.player.room.game.getName()}`);
+        this.roomEmitOther('room info', this.player.room.getInfo());
+        this.roomEmitOther('display message', 'info', `房主将游戏切换为 ${this.player.room.game.getName()}`);
       });
     });
   }
@@ -82,6 +84,10 @@ class Client extends ClientClass {
     assert(this.player.room);
     this.socket.to(this.player.room.id.toString()).emit(...args);
     this.socket.emit(...args);
+  }
+  roomEmitOther (...args) {
+    assert(this.player.room);
+    this.socket.to(this.player.room.id.toString()).emit(...args);
   }
   /**
    * Detect current status and do things again (for reconnection)

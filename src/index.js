@@ -21,10 +21,10 @@ roomStore.createRoom(80000000);
 const parseUsername = name => {
   try {
     name = name.replace(/[$%&*`'"/\\]/g, '').trim();
-    if(name.length && name.length <= 15) {
+    if (name.length && name.length <= 15) {
       return name;
     }
-  } catch(e) {
+  } catch (e) {
     return false;
   }
 }
@@ -57,7 +57,7 @@ io.use((socket, next) => { // persistent session
 });
 
 io.on("connection", (socket) => {
-  
+
   socket.emit('session', {
     sessionID: socket.sessionID,
     userID: socket.userID,
@@ -138,6 +138,22 @@ io.on("connection", (socket) => {
       targetPlayer.client.socket.to(room.id.toString()).emit('room info', room.getInfo());
       targetPlayer.client.reHandle();
       targetPlayer.client.socket.emit('display message', 'info', '你好像被房主踢了……');
+    }
+  });
+  socket.on('hurry player', id => {
+    console.log(id);
+    const targetPlayer = playerStore.findPlayer(id);
+    if (!targetPlayer) {
+      throw new Error(`Can't find player with id ${id}`);
+    }
+    if (targetPlayer.room.id !== client.player.room.id) {
+      throw new Error(`Can't kick player that not in your room (id ${id})`);
+    }
+    if (targetPlayer.stat === PlayerStatus.READY) {
+      return;
+    }
+    if (targetPlayer.stat === PlayerStatus.ROOMED) {
+      targetPlayer.client.socket.emit('display message', 'info', '房主催你准备啦！');
     }
   });
 
