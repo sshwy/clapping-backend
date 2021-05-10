@@ -2,8 +2,7 @@ const { RoomStatus, Move, PlayerStatus } = require('./vars');
 const logg = require('./logger');
 const { assert, randomId } = require('./utils');
 const { RoomClass, PlayerClass } = require('./types');
-const classic_game = require('./game/classic').default;
-const { eps } = require('./game/classic');
+const game_list = require('./game');
 
 /**
  * @class Room
@@ -13,7 +12,7 @@ class Room extends RoomClass {
   constructor(id) {
     super(id);
 
-    this.game = classic_game;
+    this.game = game_list[0];
     this.stat = RoomStatus.PREPARING;
     this.log = logg.getLogger(`Room ${id}`);
     this.log.info('Created.');
@@ -32,17 +31,20 @@ class Room extends RoomClass {
       })),
     };
   }
-  handleEvent (event) {
-    if (event === 'player ready') {
+  handleEvent (event, cb) {
+    if (event.event_name === 'player ready') {
       if (this.ready_timeout) clearTimeout(this.ready_timeout);
       this.ready_timeout = setTimeout(() => {
         if (this.players.length > 1 && this.ready()) {
           this.startGame();
         }
       }, 1000);
-    } else if (event === 'player cancel ready') {
+    } else if (event.event_name === 'player cancel ready') {
       // do nothing.
+    } else if (event.event_name === 'choose game') {
+      this.game = game_list[event.game_id];
     }
+    if(cb !== undefined) cb ();
   }
   registerPlayer (player) {
     return new Promise((resolve, reject) => {
@@ -89,7 +91,7 @@ class Room extends RoomClass {
       const res = await this.requestMovement();
       clearTimeout(this.req_movement_time_limit);
 
-      console.log('res', res);
+      // console.log('res', res);
       const movements = res.map((e, index) => ({
         id: this.alive_players[index].getId(),
         move: e.move,
@@ -97,12 +99,12 @@ class Room extends RoomClass {
       }));
       const data = this.game.handleTurn(movements);
 
-      console.log('data', data);
+      // console.log('data', data);
 
       const deadPlayers =
-        this.alive_players.filter(player => data[player.getId()].filtered_injury > eps * 0.1);
+        this.alive_players.filter(player => data[player.getId()].filtered_injury > 0);
       const nextRoundPlayers =
-        this.alive_players.filter((player, i) => !(data[player.getId()].filtered_injury > eps * 0.1));
+        this.alive_players.filter((player, i) => !(data[player.getId()].filtered_injury > 0));
 
       const appendLog = this.alive_players.map(e => e.data).map((e, idx, arr) => {
         const mv = data[e.id];

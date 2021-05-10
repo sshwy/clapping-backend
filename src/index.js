@@ -1,4 +1,4 @@
-const classic_game = require('./game/classic').default;
+const game_list = require('./game');
 const httpServer = require("http").createServer();
 const io = require("socket.io")(httpServer, {
   cors: {
@@ -57,13 +57,12 @@ io.use((socket, next) => { // persistent session
 });
 
 io.on("connection", (socket) => {
+  
   socket.emit('session', {
     sessionID: socket.sessionID,
     userID: socket.userID,
     username: socket.username,
-    games: [
-      classic_game.toJSONObject(),
-    ],
+    games: game_list.map(g => g.toJSONObject()),
   });
 
   const player = playerStore.findPlayer(socket.userID)

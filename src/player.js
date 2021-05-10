@@ -110,13 +110,17 @@ class Player extends PlayerClass {
     if (data.event_name === 'ready') { // do nothing
       assert(this.room);
       this.log.info(`ready.`);
-      this.room.handleEvent('player ready');
+      this.room.handleEvent({
+        event_name: 'player ready'
+      });
     }
     if (data.event_name === 'cancel ready') { // do nothing
       assert(this.room);
       this.log.info(`not ready.`);
       this.stat = PlayerStatus.ROOMED;
-      this.room.handleEvent('player cancel ready');
+      this.room.handleEvent({
+        event_name: 'player cancel ready'
+      });
     }
     if (data.event_name === 'game prepare') {
       this.data.movePoint = 0;

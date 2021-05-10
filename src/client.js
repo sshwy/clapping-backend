@@ -41,6 +41,14 @@ class Client extends ClientClass {
     this.socket.on('watcher finish draw', () => {
       // do nothing
     });
+    this.socket.on('choose game', game_id => {
+      this.player.room.handleEvent({
+        event_name: 'choose game',
+        game_id: game_id,
+      }, () => {
+        this.socket.emit('display message', 'success', '成功选择游戏～');
+      });
+    });
   }
   handleRequestMovement (data) {
     this.socket.emit('request movement', this.player.getStatus(), data.timeout);

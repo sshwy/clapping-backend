@@ -207,8 +207,7 @@ class GameClass {
   constructor(config) {
     this.config = config;
   }
-  calculateEffect () {
-  }
+  calculateEffect () { }
   getMovementById (...args) {
     return this.config.movement_group.getMovementById(...args);
   }

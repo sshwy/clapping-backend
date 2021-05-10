@@ -164,8 +164,7 @@ class Game extends GameClass {
    * 给出玩家的行动，计算结果
    *
    * @param {Array<{ id: string, move: number, target: string }>} player_movements
-   * @return {{ [string]: { move: number, target: string, injury: number, filtered_injury: number,
-        hit: string[], hitted: string[] } }}
+   * @return {{ [string]: { move: number, target: string, injury: number, filtered_injury: number, hit: string[], hitted: string[] } }}
    * @memberof Game
    */
   handleTurn (player_movements) {
@@ -211,17 +210,28 @@ class Game extends GameClass {
       player_movements.forEach(j => {
         if(j.id !== i.id) {
           const recive = effect_map[j.id][i.id], send = effect_map[i.id][j.id];
-          if(send > recive) {
-            result[i.id].hit.push(j.id);
-          }
           if(recive > send) {
-            result[i.id].hitted.push(j.id);
             result[i.id].injury += recive - send;
           }
         }
       });
       result[i.id].filtered_injury = calcRealInjury(i.move, result[i.id].injury);
     });
+
+    player_movements.forEach(i => {
+      player_movements.forEach(j => {
+        if(j.id !== i.id) {
+          const recive = effect_map[j.id][i.id], send = effect_map[i.id][j.id];
+          if(send > recive && result[j.id].filtered_injury > 0) {
+            result[i.id].hit.push(j.id);
+          }
+          if(recive > send && result[i.id].filtered_injury > 0) {
+            result[i.id].hitted.push(j.id);
+          }
+        }
+      });
+    });
+
     return result;
   }
 }
@@ -236,5 +246,6 @@ const game = new Game({
 
 module.exports = {
   default: game,
-  eps,
+  Game,
+  grp,
 }
