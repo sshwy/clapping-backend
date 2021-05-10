@@ -1,8 +1,9 @@
-const { RoomStatus, Move, PlayerStatus } = require('../vars');
-const logg = require('../logger');
-const { assert, randomId } = require('../utils');
-const { calcEffect, eps } = require('./logic');
+const { RoomStatus, Move, PlayerStatus } = require('./vars');
+const logg = require('./logger');
+const { assert, randomId } = require('./utils');
 const { RoomClass, PlayerClass } = require('./types');
+const classic_game = require('./game/classic').default;
+const { eps } = require('./game/classic');
 
 /**
  * @class Room
@@ -85,51 +86,25 @@ class Room extends RoomClass {
       this.log.info('still alive:', this.alive_players.map(e => `${e.data.name}(${e.data.movePoint})`).join(', '));
 
       const res = await this.requestMovement();
+      clearTimeout(this.req_movement_time_limit);
 
-      let aw = new Array(this.alive_players.length);
+      console.log('res', res);
+      const movements = res.map((e, index) => ({
+        id: this.alive_players[index].getId(),
+        move: e.move,
+        target: e.target,
+      }));
+      const data = classic_game.handleTurn(movements);
 
-      for (let i = 0; i < aw.length; i++)
-        aw[i] = new Array(this.alive_players.length);
+      console.log('data', data);
 
-      const movement_map = {};
-
-      this.alive_players.forEach((pA, i) => {
-        movement_map[pA.data.id] = res[i];
-        this.alive_players.forEach((pB, j) => {
-          aw[i][j] = calcEffect(pA, res[i], pB, res[j]);
-        });
-      });
-
-      let injury = new Array(this.alive_players.length);
-      this.alive_players.forEach((pA, i) => {
-        injury[i] = 0;
-        this.alive_players.forEach((pB, j) => {
-          if (j != i) {
-            injury[i] += Math.max(aw[j][i] - aw[i][j], 0);
-          }
-        });
-      });
-
-      const calcRealInjury = i => {
-        switch (res[i].move) {
-          case Move.DEFEND:
-          case Move.THORNS_I:
-            return Math.max(injury[i] - (2 - eps), 0);
-          case Move.THORNS_II:
-            return Math.max(injury[i] - (3 - eps), 0);
-          case Move.STRONG_DEFEND:
-          case Move.THORNS_III:
-            return Math.max(injury[i] - 4, 0);
-          default:
-            return injury[i];
-        }
-      };
-
-      const deadPlayers = this.alive_players.filter((player, i) => calcRealInjury(i) > eps * 0.1);
-      const nextRoundPlayers = this.alive_players.filter((player, i) => !(calcRealInjury(i) > eps * 0.1));
+      const deadPlayers =
+        this.alive_players.filter(player => data[player.getId()].filtered_injury > eps * 0.1);
+      const nextRoundPlayers =
+        this.alive_players.filter((player, i) => !(data[player.getId()].filtered_injury > eps * 0.1));
 
       const appendLog = this.alive_players.map(e => e.data).map((e, idx, arr) => {
-        const mv = movement_map[e.id];
+        const mv = data[e.id];
         const tar = mv.target
           ? arr.filter((e) => e.id === mv.target)[0].name
           : "";
@@ -153,7 +128,7 @@ class Room extends RoomClass {
 
       const newLogs = [...deads, ...appendLog];
 
-      if(nextRoundPlayers.length === 1) {
+      if (nextRoundPlayers.length === 1) {
         const winner = nextRoundPlayers[0];
         newLogs.unshift({
           type: 'win',
@@ -161,7 +136,7 @@ class Room extends RoomClass {
           die: winner.data.name,
           turn: this.turn,
         });
-      } else if(nextRoundPlayers.length === 0) {
+      } else if (nextRoundPlayers.length === 0) {
         newLogs.unshift({
           type: 'msg',
           id: `message-${randomId()}-${this.turn}`,
@@ -180,7 +155,7 @@ class Room extends RoomClass {
           from: 'roomer',
           data: {
             event_name: 'player draw',
-            movement_map: movement_map,
+            movement_map: data,
             logs: newLogs,
           },
         });
@@ -193,7 +168,7 @@ class Room extends RoomClass {
           from: 'roomer',
           data: {
             event_name: 'watcher draw',
-            movement_map: movement_map,
+            movement_map: data,
             logs: newLogs,
           },
         });
@@ -267,7 +242,8 @@ class Room extends RoomClass {
         nextStat: PlayerStatus.ACTING,
         from: 'roomer',
         data: {
-          event_name: 'request movement'
+          event_name: 'request movement',
+          timeout: 15000,
         },
       }));
       this.alive_players[0].client.roomEmit('room info ingame', this.getInfo());
@@ -277,6 +253,25 @@ class Room extends RoomClass {
           resolve(this._response);
         }
       }, 1000);
+      this.req_movement_time_limit = setTimeout(() => {
+        this.alive_players.forEach(player => {
+          if (player.stat === PlayerStatus.ACTING) { // time out
+            player.handleEvent({
+              prevStat: PlayerStatus.ACTING,
+              nextStat: PlayerStatus.SUBMITED,
+              from: 'roomer',
+              data: {
+                event_name: 'force movement',
+                movement: { // do CLAP
+                  move: 0,
+                  target: ''
+                },
+              },
+            });
+          }
+        });
+        this.alive_players[0].client.roomEmit('room info ingame', this.getInfo());
+      }, 15000 + 1000); // 15s
     });
   }
 }

@@ -1,7 +1,7 @@
-const logg = require('../logger');
-const { assert } = require("../utils");
-const { PlayerStatus } = require("../vars");
-const { roomStore } = require('../manager');
+const logg = require('./logger');
+const { assert } = require("./utils");
+const { PlayerStatus } = require("./vars");
+const { roomStore } = require('./manager');
 const { ClientClass } = require("./types");
 
 /**
@@ -14,15 +14,19 @@ class Client extends ClientClass {
 
     this.log = logg.getLogger(`Client ${this.player.data.name}`);
     this.socket.on('movement', data => {
-      this.player.handleEvent({
-        prevStat: PlayerStatus.ACTING,
-        nextStat: PlayerStatus.SUBMITED,
-        from: 'client',
-        data: {
-          event_name: 'response movement',
-          movement: data,
-        },
-      });
+      if (this.player.stat !== PlayerStatus.ACTING) {
+        this.socket.emit('display message', 'info', '你似乎超时啦～系统帮你 随 机 选了一个操作哦');
+      } else {
+        this.player.handleEvent({
+          prevStat: PlayerStatus.ACTING,
+          nextStat: PlayerStatus.SUBMITED,
+          from: 'client',
+          data: {
+            event_name: 'response movement',
+            movement: data,
+          },
+        });
+      }
     });
     this.socket.on('finish draw', () => {
       this.player.handleEvent({
@@ -38,8 +42,8 @@ class Client extends ClientClass {
       // do nothing
     });
   }
-  handleRequestMovement () {
-    this.socket.emit('request movement', this.player.getStatus());
+  handleRequestMovement (data) {
+    this.socket.emit('request movement', this.player.getStatus(), data.timeout);
   }
   handleTerminate (signal) {
     this.socket.emit(signal);
@@ -48,7 +52,7 @@ class Client extends ClientClass {
     this.socket.emit('draw', data);
   }
   handleRoomListDisplay (is_update = false) {
-    if(is_update) this.socket.emit('room list update', roomStore.getAll().map(room => room.getInfo()));
+    if (is_update) this.socket.emit('room list update', roomStore.getAll().map(room => room.getInfo()));
     else this.socket.emit('room list', roomStore.getAll().map(room => room.getInfo()));
   }
   handleSubmitted () {
@@ -61,9 +65,9 @@ class Client extends ClientClass {
   handleGamePrepare () {
     this.socket.emit('game prepare');
   }
-  handleTalk(text) {
+  handleTalk (text) {
     assert(this.player.room);
-    if(text.length > 50) return;
+    if (text.length > 50) return;
     this.roomEmit('speak', this.player.data.id, text);
   }
   roomEmit (...args) {
@@ -77,7 +81,7 @@ class Client extends ClientClass {
   reHandle () {
     this.log.info(`invoke rehandle (stat: ${this.player.stat})`);
     assert(this.player);
-    switch(this.player.stat) {
+    switch (this.player.stat) {
       case PlayerStatus.ROOMED:
       case PlayerStatus.READY:
         assert(this.player.room);

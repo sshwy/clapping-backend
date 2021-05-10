@@ -1,7 +1,7 @@
-const { assert } = require('../utils');
+const { assert } = require('./utils');
 
-const logg = require('../logger');
-const { Move, PlayerStatus, MoveName } = require('../vars');
+const logg = require('./logger');
+const { Move, PlayerStatus, MoveName } = require('./vars');
 const { PlayerClass, ClientClass, RoomClass } = require('./types');
 
 /**
@@ -70,7 +70,7 @@ class Player extends PlayerClass {
     }
     if (data.event_name === 'request movement') {
       assert(from === 'roomer');
-      this.client.handleRequestMovement();
+      this.client.handleRequestMovement(data);
     }
     if (data.event_name === 'response movement') {
       assert(from === 'client');
@@ -81,6 +81,21 @@ class Player extends PlayerClass {
         data: movement,
       });
       this.client.roomEmit('room info ingame', this.room.getInfo());
+      this.tmp_storage = {
+        from: this.data.name,
+        to: this.room.alive_players.find(e => e.data.id === movement.target)?.data.name,
+        move: movement.move
+      };
+      this.client.handleSubmitted(this.tmp_storage);
+    }
+    if (data.event_name === 'force movement') {
+      assert(from === 'roomer');
+      const movement = data.movement;
+      this.log.info(`emit ${MoveName[movement.move]}, target: ${movement.target}`);
+      this.room.handleMovement({
+        from: this.data.id,
+        data: movement,
+      });
       this.tmp_storage = {
         from: this.data.name,
         to: this.room.alive_players.find(e => e.data.id === movement.target)?.data.name,

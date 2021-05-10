@@ -1,4 +1,4 @@
-const Player = require("../game/player");
+const Player = require("../player");
 const logg = require('../logger');
 
 /**

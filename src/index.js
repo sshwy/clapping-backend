@@ -7,7 +7,7 @@ const io = require("socket.io")(httpServer, {
 
 const sessionStore = require('./sessionStore');
 const { playerStore, roomStore } = require('./manager');
-const Client = require("./game/client");
+const Client = require("./client");
 const { PlayerStatus } = require("./vars");
 const { randomId } = require("./utils");
 
@@ -17,8 +17,15 @@ roomStore.createRoom(8964);
 roomStore.createRoom(250);
 roomStore.createRoom(80000000);
 
-const isVaildUsername = name => {
-  return name.length && name.length <= 15 && name.trim();
+const parseUsername = name => {
+  try {
+    name = name.replace(/[$%&*`'"/\\]/g, '').trim();
+    if(name.length && name.length <= 15) {
+      return name;
+    }
+  } catch(e) {
+    return false;
+  }
 }
 
 io.use((socket, next) => { // persistent session
@@ -34,8 +41,8 @@ io.use((socket, next) => { // persistent session
     }
   }
 
-  const username = socket.handshake.auth.username;
-  if (isVaildUsername(username) == false) return next(new Error("invalid username"));
+  const username = parseUsername(socket.handshake.auth.username);
+  if (!username) return next(new Error("invalid username"));
 
   // create new session
   socket.sessionID = randomId();
