@@ -192,6 +192,15 @@ cli-boxes@^2.2.0:
   resolved "https://registry.nlark.com/cli-boxes/download/cli-boxes-2.2.1.tgz#ddd5035d25094fce220e9cab40a45840a440318f"
   integrity sha1-3dUDXSUJT84iDpyrQKRYQKRAMY8=
 
+clone-deep@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.nlark.com/clone-deep/download/clone-deep-4.0.1.tgz#c19fd9bdbbf85942b4fd979c84dcf7d5f07c2387"
+  integrity sha1-wZ/Zvbv4WUK0/ZechNz31fB8I4c=
+  dependencies:
+    is-plain-object "^2.0.4"
+    kind-of "^6.0.2"
+    shallow-clone "^3.0.0"
+
 clone-response@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npm.taobao.org/clone-response/download/clone-response-1.0.2.tgz#d1dc973920314df67fbeb94223b4ee350239e96b"
@@ -568,6 +577,13 @@ is-path-inside@^3.0.1:
   resolved "https://registry.nlark.com/is-path-inside/download/is-path-inside-3.0.3.tgz#d231362e53a07ff2b0e0ea7fed049161ffd16283"
   integrity sha1-0jE2LlOgf/Kw4Op/7QSRYf/RYoM=
 
+is-plain-object@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.npm.taobao.org/is-plain-object/download/is-plain-object-2.0.4.tgz#2c163b3fafb1b606d9d17928f05c2a1c38e07677"
+  integrity sha1-LBY7P6+xtgbZ0Xko8FwqHDjgdnc=
+  dependencies:
+    isobject "^3.0.1"
+
 is-typedarray@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npm.taobao.org/is-typedarray/download/is-typedarray-1.0.0.tgz#e479c80858df0c1b11ddda6940f96011fcda4a9a"
@@ -577,6 +593,11 @@ is-yarn-global@^0.3.0:
   version "0.3.0"
   resolved "https://registry.nlark.com/is-yarn-global/download/is-yarn-global-0.3.0.tgz?cache=0&sync_timestamp=1619356824740&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fis-yarn-global%2Fdownload%2Fis-yarn-global-0.3.0.tgz#d502d3382590ea3004893746754c89139973e232"
   integrity sha1-1QLTOCWQ6jAEiTdGdUyJE5lz4jI=
+
+isobject@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.nlark.com/isobject/download/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
+  integrity sha1-TkMekrEalzFjaqH5yNHMvP2reN8=
 
 json-buffer@3.0.0:
   version "3.0.0"
@@ -589,6 +610,11 @@ keyv@^3.0.0:
   integrity sha1-7MIoSG9pmR5J6UdkhaW+Ho/FxNk=
   dependencies:
     json-buffer "3.0.0"
+
+kind-of@^6.0.2:
+  version "6.0.3"
+  resolved "https://registry.npm.taobao.org/kind-of/download/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
+  integrity sha1-B8BQNKbDSfoG4k+jWqdttFgM5N0=
 
 latest-version@^5.0.0:
   version "5.1.0"
@@ -861,6 +887,13 @@ semver@^6.0.0, semver@^6.2.0, semver@^6.3.0:
   version "6.3.0"
   resolved "https://registry.nlark.com/semver/download/semver-6.3.0.tgz?cache=0&sync_timestamp=1618846864940&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fsemver%2Fdownload%2Fsemver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
   integrity sha1-7gpkyK9ejO6mdoexM3YeG+y9HT0=
+
+shallow-clone@^3.0.0:
+  version "3.0.1"
+  resolved "https://registry.nlark.com/shallow-clone/download/shallow-clone-3.0.1.tgz#8f2981ad92531f55035b01fb230769a40e02efa3"
+  integrity sha1-jymBrZJTH1UDWwH7IwdppA4C76M=
+  dependencies:
+    kind-of "^6.0.2"
 
 signal-exit@^3.0.2:
   version "3.0.3"

@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "chalk": "^4.1.1",
+    "clone-deep": "^4.0.1",
     "google-protobuf": "^3.15.8",
     "loglevel": "^1.7.1",
     "loglevel-plugin-prefix": "^0.8.4",

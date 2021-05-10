@@ -1,3 +1,4 @@
+const deepClone = require('clone-deep');
 
 /**
  * @class PlayerClass
@@ -130,6 +131,9 @@ class MovementClass {
   needTarget () {
     return Boolean(this.config.need_target);
   }
+  toJSONObject () {
+    return deepClone(this.config);
+  }
 }
 
 /**
@@ -181,6 +185,12 @@ class MovementGroup {
       .map(this.getMovementById)
       .filter(Boolean);
   }
+  toJSONObject () {
+    return {
+      movement_list: this.movement_list.map(e => e.toJSONObject()),
+      config: deepClone(this.config),
+    };
+  }
 }
 
 /**
@@ -201,6 +211,12 @@ class GameClass {
   }
   getMovementById (...args) {
     return this.config.movement_group.getMovementById(...args);
+  }
+  toJSONObject () {
+    return {
+      name: this.config.name,
+      movement_group: this.config.movement_group.toJSONObject(),
+    };
   }
 };
 

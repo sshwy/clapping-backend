@@ -96,7 +96,7 @@ class Client extends ClientClass {
     if (this.player.stat === PlayerStatus.INITIALIZED) {
       this.handleRoomListDisplay();
     } else if (this.player.stat === PlayerStatus.ACTING) {
-      this.handleRequestMovement();
+      this.handleRequestMovement(this.player.tmp_storage); // ERROR!!!!
     } else if (this.player.stat === PlayerStatus.DRAWING) {
       this.handleDrawing(this.player.tmp_storage);
     } else if (this.player.stat === PlayerStatus.WATCHING) {

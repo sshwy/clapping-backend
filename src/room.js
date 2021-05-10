@@ -13,6 +13,7 @@ class Room extends RoomClass {
   constructor(id) {
     super(id);
 
+    this.game = classic_game;
     this.stat = RoomStatus.PREPARING;
     this.log = logg.getLogger(`Room ${id}`);
     this.log.info('Created.');
@@ -94,7 +95,7 @@ class Room extends RoomClass {
         move: e.move,
         target: e.target,
       }));
-      const data = classic_game.handleTurn(movements);
+      const data = this.game.handleTurn(movements);
 
       console.log('data', data);
 
@@ -243,7 +244,7 @@ class Room extends RoomClass {
         from: 'roomer',
         data: {
           event_name: 'request movement',
-          timeout: 15000,
+          timeout: new Date().getTime() + 15000,
         },
       }));
       this.alive_players[0].client.roomEmit('room info ingame', this.getInfo());

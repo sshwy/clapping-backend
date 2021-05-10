@@ -70,6 +70,7 @@ class Player extends PlayerClass {
     }
     if (data.event_name === 'request movement') {
       assert(from === 'roomer');
+      this.tmp_storage = data;
       this.client.handleRequestMovement(data);
     }
     if (data.event_name === 'response movement') {

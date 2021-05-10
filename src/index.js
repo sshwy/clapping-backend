@@ -1,3 +1,4 @@
+const classic_game = require('./game/classic').default;
 const httpServer = require("http").createServer();
 const io = require("socket.io")(httpServer, {
   cors: {
@@ -60,6 +61,9 @@ io.on("connection", (socket) => {
     sessionID: socket.sessionID,
     userID: socket.userID,
     username: socket.username,
+    games: [
+      classic_game.toJSONObject(),
+    ],
   });
 
   const player = playerStore.findPlayer(socket.userID)
