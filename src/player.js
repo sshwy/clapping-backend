@@ -57,7 +57,7 @@ class Player extends PlayerClass {
       this.log.info('drawing');
       this.tmp_storage = {
         ...data,
-        status: this.getStatus()
+        game_id: this.room.game_id,
       };
       this.client.handleDrawing(this.tmp_storage);
     }
@@ -65,7 +65,10 @@ class Player extends PlayerClass {
       assert(from === 'roomer');
       this.applyMovement(data.movement_map[this.getId()]);
       this.log.info('drawing');
-      this.tmp_storage = data;
+      this.tmp_storage = {
+        ...data,
+        game_id: this.room.game_id,
+      };
       this.client.handleDrawing(this.tmp_storage);
     }
     if (data.event_name === 'request movement') {

@@ -6,77 +6,96 @@ const MoveData = [{
   id: 0, tags: ['老八秘制小汉堡'],
   title: '拍手', point: -1, attack: 0, defend: 0,
   description: '增加一点行动力。',
-  background_color: '#8bc34a', background_color_hover: '#689f38'
+  background_color: '#8bc34a', background_color_hover: '#689f38',
+  image_list: ['/resouce/image/game-classic/CLAP.png'],
 }, {
   id: 1, tags: ['防守'],
   title: '格挡', point: 0, attack: 0, defend: '*2',
   description: '若伤害值大于等于 2 则无法格挡。',
-  background_color: '#8bc34a', background_color_hover: '#689f38'
+  background_color: '#8bc34a', background_color_hover: '#689f38',
+  image_list: ['/resouce/image/game-classic/DEFEND.png'],
 }, {
   id: 2, tags: ['防守'],
   title: '双重格挡', point: 1, attack: 0, defend: 4,
   description: '若伤害值大于 4 则无法格挡。',
-  background_color: '#00bcd4', background_color_hover: '#0097a7'
+  background_color: '#00bcd4', background_color_hover: '#0097a7',
+  image_list: ['/resouce/image/game-classic/STRONG_DEFEND.png'],
 }, {
   id: 3, tags: ['单体攻击'], need_target: true,
   title: '射击', point: 1, attack: 1, defend: 0,
   description: '造成 1 点伤害。',
-  background_color: '#00bcd4', background_color_hover: '#0097a7'
+  background_color: '#00bcd4', background_color_hover: '#0097a7',
+  image_list: ['/resouce/image/game-classic/SHOOT.png'],
 }, {
   id: 4, tags: ['单体攻击', '破防'], need_target: true,
   title: '击剑', point: 2, attack: 2, defend: 0,
   description: '造成 2 点伤害。',
-  background_color: '#ffc107', background_color_hover: '#ff6f00'
+  background_color: '#ffc107', background_color_hover: '#ff6f00',
+  image_list: ['/resouce/image/game-classic/SLASH.png'],
 }, {
   id: 5, tags: ['单体攻击', '破防', '雷电'], need_target: true,
   title: '雷罚', point: 3, attack: 3, defend: 0,
   description: '造成 3 点伤害，可用「避雷」闪避。',
-  background_color: '#ff5722', background_color_hover: '#bf360c'
+  background_color: '#ff5722', background_color_hover: '#bf360c',
+  image_list: ['/resouce/image/game-classic/LIGHTNING_STRIKE.png'],
 }, {
   id: 6, tags: ['单体攻击', '破防'], need_target: true,
   title: '地裂', point: 4, attack: 4, defend: 0,
   description: '造成 4 点伤害。',
-  background_color: '#ab47bc', background_color_hover: '#6a1b9a'
+  background_color: '#ab47bc', background_color_hover: '#6a1b9a',
+  image_list: ['/resouce/image/game-classic/EARTHQUAKE.png'],
 }, {
   id: 7, tags: ['AOE'],
   title: '刃波 I', point: 1, attack: '*1', defend: 0,
   description: '对除你之外的全体玩家造成接近 1 点的伤害。',
-  background_color: '#00bcd4', background_color_hover: '#0097a7'
+  background_color: '#00bcd4', background_color_hover: '#0097a7',
+  image_list: ['/resouce/image/game-classic/SWEEP.png'],
 }, {
   id: 8, tags: ['AOE', '抵防'],
   title: '刃波 II', point: 2, attack: '*2', defend: 0,
   description: '对除你之外的全体玩家造成接近 2 点的伤害。',
-  background_color: '#ffc107', background_color_hover: '#ff6f00'
+  background_color: '#ffc107', background_color_hover: '#ff6f00',
+  image_list: ['/resouce/image/game-classic/SWEEP.png', '/resouce/image/game-classic/SWEEP.png'],
 }, {
   id: 9, tags: ['AOE', '破防'],
   title: '刃波 III', point: 3, attack: '*3', defend: 0,
   description: '对除你之外的全体玩家造成接近 3 点的伤害。',
-  background_color: '#ff5722', background_color_hover: '#bf360c'
+  background_color: '#ff5722', background_color_hover: '#bf360c',
+  image_list: ['/resouce/image/game-classic/SWEEP.png',
+    '/resouce/image/game-classic/SWEEP.png',
+    '/resouce/image/game-classic/SWEEP.png'],
 }, {
   id: 10, tags: ['AOE', '破防', '雷电'],
   title: '雷狱', point: 4, attack: '*4', defend: 0,
   description: '对除你之外的全体玩家造成接近 4 点的伤害，可用「避雷」闪避',
-  background_color: '#ab47bc', background_color_hover: '#6a1b9a'
+  background_color: '#ab47bc', background_color_hover: '#6a1b9a',
+  image_list: ['/resouce/image/game-classic/LIGHTNING_STORM.png'],
 }, {
   id: 11, tags: ['防守', '反甲'],
   title: '荆棘 I', point: 1, attack: '0-1', defend: '*2',
   description: '如果受到的伤害在 0~1 之间，那么造成的伤害等于受到的伤害。否则如果受到超过 1 的伤害，那么将无法反弹，只能起到格挡的作用。',
-  background_color: '#00bcd4', background_color_hover: '#0097a7'
+  background_color: '#00bcd4', background_color_hover: '#0097a7',
+  image_list: ['/resouce/image/game-classic/THORNS.png'],
 }, {
   id: 12, tags: ['防守', '反甲'],
   title: '荆棘 II', point: 2, attack: '0-2', defend: '*3',
   description: '如果受到的伤害在 0~2 之间，那么造成的伤害等于受到的伤害。否则如果受到超过 2 的伤害，那么将无法反弹，只能起到格挡的作用。',
-  background_color: '#ffc107', background_color_hover: '#ff6f00'
+  background_color: '#ffc107', background_color_hover: '#ff6f00',
+  image_list: ['/resouce/image/game-classic/THORNS.png', '/resouce/image/game-classic/THORNS.png'],
 }, {
   id: 13, tags: ['防守', '反甲'],
   title: '荆棘 III', point: 3, attack: '0-3', defend: '4',
   description: '如果受到的伤害在 0~3 之间，那么造成的伤害等于受到的伤害。否则如果受到超过 3 的伤害，那么将无法反弹，只能起到格挡的作用。',
-  background_color: '#ff5722', background_color_hover: '#bf360c'
+  background_color: '#ff5722', background_color_hover: '#bf360c',
+  image_list: ['/resouce/image/game-classic/THORNS.png',
+    '/resouce/image/game-classic/THORNS.png',
+    '/resouce/image/game-classic/THORNS.png'],
 }, {
   id: 14, tags: ['防守', '特殊'],
   title: '避雷', point: 1, attack: 0, defend: 0,
   description: '雷罚和雷狱对你无效。',
-  background_color: '#00bcd4', background_color_hover: '#0097a7'
+  background_color: '#00bcd4', background_color_hover: '#0097a7',
+  image_list: ['/resouce/image/game-classic/LIGHTNING_ARRESTER.png'],
 }];
 
 const Move = {
@@ -208,9 +227,9 @@ class Game extends GameClass {
 
     player_movements.forEach(i => {
       player_movements.forEach(j => {
-        if(j.id !== i.id) {
+        if (j.id !== i.id) {
           const recive = effect_map[j.id][i.id], send = effect_map[i.id][j.id];
-          if(recive > send) {
+          if (recive > send) {
             result[i.id].injury += recive - send;
           }
         }
@@ -220,12 +239,12 @@ class Game extends GameClass {
 
     player_movements.forEach(i => {
       player_movements.forEach(j => {
-        if(j.id !== i.id) {
+        if (j.id !== i.id) {
           const recive = effect_map[j.id][i.id], send = effect_map[i.id][j.id];
-          if(send > recive && result[j.id].filtered_injury > 0) {
+          if (send > recive && result[j.id].filtered_injury > 0) {
             result[i.id].hit.push(j.id);
           }
-          if(recive > send && result[i.id].filtered_injury > 0) {
+          if (recive > send && result[i.id].filtered_injury > 0) {
             result[i.id].hitted.push(j.id);
           }
         }
