@@ -128,7 +128,7 @@ class Game extends GameClass {
       case Move.SWEEP_III:
         return 3 - eps;
       case Move.LIGHTNING_STORM:
-        if (moveB.move == Move.LIGHTNING_ARRESTER) return 0;
+        if (target_movement.getId() === Move.LIGHTNING_ARRESTER) return 0;
         else return 4 - eps;
     };
     if (effective) {
@@ -138,7 +138,7 @@ class Game extends GameClass {
         case Move.SLASH:
           return 2;
         case Move.LIGHTNING_STRIKE:
-          if (moveB.move == Move.LIGHTNING_ARRESTER) return 0;
+          if (target_movement.getId() === Move.LIGHTNING_ARRESTER) return 0;
           else return 3;
         case Move.EARTHQUAKE:
           return 4;
