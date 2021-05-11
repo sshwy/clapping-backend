@@ -1,6 +1,6 @@
-const ClassicGame = require('./classic').Game;
+const HuntingGame = require('./hunting').Game;
 
-class GainPointByKill extends ClassicGame {
+class Revive extends HuntingGame {
   constructor(config) {
     super(config);
   }
@@ -10,21 +10,24 @@ class GainPointByKill extends ClassicGame {
    * @return {{ [string]: { move: number, target: string, injury: number, filtered_injury: number, hit: string[], hitted: string[] } }}
    * @memberof GainPointByKill
    */
-  handleTurn(player_movements, config) {
+  handleTurn (player_movements, config) {
     const data = super.handleTurn(player_movements, config);
-    player_movements.forEach(i => {
-      data[i.id].delta_point += data[i.id].hit.length; // 点数加上杀的人数
-    });
+    if (config.turn % 3 === 0) {
+      console.log('extra point at turn ' + config.turn);
+      player_movements.forEach(i => {
+        data[i.id].delta_point ++; // 每三回合加一口气
+      });
+    }
     return data;
   }
 }
 
-const game = new GainPointByKill({
-  name: 'Clapping Game: Hunting Time',
+const game = new Revive({
+  name: 'Clapping Game: Revive',
   movement_group: require('./classic').grp,
 });
 
 module.exports = {
-  Game: GainPointByKill,
+  Game: Revive,
   default: game,
 }

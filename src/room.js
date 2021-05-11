@@ -100,7 +100,9 @@ class Room extends RoomClass {
         move: e.move,
         target: e.target,
       }));
-      const data = this.game.handleTurn(movements);
+      const data = this.game.handleTurn(movements, {
+        turn: this.turn,
+      });
 
       // console.log('data', data);
 

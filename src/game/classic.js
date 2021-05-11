@@ -16,8 +16,8 @@ const MoveData = [{
   image_list: ['/resouce/image/game-classic/DEFEND.png'],
 }, {
   id: 2, tags: ['防守'],
-  title: '双重格挡', point: 1, attack: 0, defend: 4,
-  description: '若伤害值大于 4 则无法格挡。',
+  title: '双重格挡', point: 1, attack: 0, defend: '*3',
+  description: '若伤害值大于等于 3 则无法格挡。',
   background_color: '#00bcd4', background_color_hover: '#0097a7',
   image_list: ['/resouce/image/game-classic/STRONG_DEFEND.png'],
 }, {
@@ -183,10 +183,11 @@ class Game extends GameClass {
    * 给出玩家的行动，计算结果
    *
    * @param {Array<{ id: string, move: number, target: string }>} player_movements
+   * @param {{ turn: number }} config
    * @return {{ [string]: { move: number, target: string, injury: number, filtered_injury: number, hit: string[], hitted: string[] } }}
    * @memberof Game
    */
-  handleTurn (player_movements) {
+  handleTurn (player_movements, config) {
     const calcRealInjury = (move, injury) => {
       switch (move) {
         case Move.DEFEND:
@@ -195,6 +196,7 @@ class Game extends GameClass {
         case Move.THORNS_II:
           return Math.max(injury - (3 - eps), 0);
         case Move.STRONG_DEFEND:
+          return Math.max(injury - (3 - eps), 0);
         case Move.THORNS_III:
           return Math.max(injury - 4, 0);
         default:

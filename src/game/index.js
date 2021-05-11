@@ -1,4 +1,7 @@
-const classic = require('./classic').default;
-const hunting = require('./hunting').default;
 
-module.exports = [ classic, hunting, ]
+module.exports = [
+  require('./classic').default,
+  require('./hunting').default,
+  require('./revive').default,
+]
+
