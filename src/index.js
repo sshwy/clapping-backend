@@ -72,21 +72,39 @@ io.on("connection", (socket) => {
 
   client.reHandle();
 
+  var action_ban = false;
+  const debounce = socket => {
+    if(action_ban) {
+      client.socket.emit('display message', 'error', 'WDNMD 能不能给爷死？？？');
+      return true;
+    } else {
+      action_ban = true;
+      setTimeout(() => {
+        action_ban = false;
+      }, 200);
+      return false;
+    }
+  }
+
   socket.on('room info', () => {
+    if(debounce(socket)) return;
     socket.emit('room info', player.room.getInfo());
   });
 
   socket.on('ready', () => {
+    if(debounce(socket)) return;
     player.getReady();
     client.roomEmit('room info', player.room.getInfo());
   });
 
   socket.on('cancel ready', () => {
+    if(debounce(socket)) return;
     player.cancelReady();
     client.roomEmit('room info', player.room.getInfo());
   });
 
   socket.on('select room', id => {
+    if(debounce(socket)) return;
     roomStore.findRoom(id).registerPlayer(player).then(() => {
       client.roomEmit('room info', player.room.getInfo());
     }).catch(e => {
@@ -95,6 +113,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on('quit room', () => {
+    if(debounce(socket)) return;
     const room = client.player.room;
     room.unregisterPlayer(client.player);
     socket.to(room.id.toString()).emit('room info', room.getInfo());
@@ -103,6 +122,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on('logout', () => {
+    if(debounce(socket)) return;
     if (client.player.stat === PlayerStatus.INITIALIZED) {
       playerStore.deletePlayer(socket.userID);
       socket.emit('finish logout');
@@ -112,10 +132,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on('room list update', () => {
+    if(debounce(socket)) return;
     client.handleRoomListDisplay(true);
   });
 
   socket.on('kick player', id => {
+    if(debounce(socket)) return;
     console.log(id);
     const targetPlayer = playerStore.findPlayer(id);
     if (!targetPlayer) {
@@ -136,6 +158,7 @@ io.on("connection", (socket) => {
     }
   });
   socket.on('hurry player', id => {
+    if(debounce(socket)) return;
     console.log(id);
     const targetPlayer = playerStore.findPlayer(id);
     if (!targetPlayer) {
@@ -153,6 +176,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on('talk', text => {
+    if(debounce(socket)) return;
     client.handleTalk(text);
   });
 

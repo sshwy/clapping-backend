@@ -123,6 +123,9 @@ class Movement extends MovementClass {
   isThorns () {
     return (mv => mv === Move.THORNS_I || mv === Move.THORNS_II || mv === Move.THORNS_III)(this.getId());
   }
+  isSweeps () {
+    return (mv => mv === Move.SWEEP_I || mv === Move.SWEEP_II || mv === Move.SWEEP_III)(this.getId());
+  }
 };
 
 class Game extends GameClass {
@@ -261,6 +264,7 @@ const list = MoveData.map(e => new Movement(e));
 const grp = new MovementGroup(list, null);
 const game = new Game({
   name: 'Clapping Game: Classic',
+  description: '经典的拍手游戏',
   movement_group: grp
 });
 

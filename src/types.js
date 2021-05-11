@@ -201,7 +201,7 @@ class MovementGroup {
 class GameClass {
   /**
    * Creates an instance of GameClass.
-   * @param {{ name: string, movement_group: MovementGroup }} config
+   * @param {{ name: string, description: string, movement_group: MovementGroup }} config
    * @memberof GameClass
    */
   constructor(config) {
@@ -216,6 +216,7 @@ class GameClass {
   toJSONObject () {
     return {
       name: this.config.name,
+      description: this.config.description,
       movement_group: this.config.movement_group.toJSONObject(),
     };
   }

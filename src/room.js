@@ -130,7 +130,8 @@ class Room extends RoomClass {
           type: 'die',
           id: `die-${e.self.id}-${this.turn}`,
           die: e.self.name,
-          by: data[e.self.id].hitted.map(id => this.alive_players.find(e => e.getId() === id).data.name),
+          by: data[e.self.id].hitted.map(id => this.alive_players.find(e => e.getId() === id)?.data.name || id),
+            // 找不到 player 的话说明是其他原因
           turn: this.turn,
         };
       });

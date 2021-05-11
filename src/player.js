@@ -43,13 +43,18 @@ class Player extends PlayerClass {
   handleRegisterRoomFailed () {
     this.client.handleRegisterRoomFailed();
   }
+  /**
+   * forceStat: 要不要 assert stat
+   * @memberof Player
+   */
   handleEvent ({
     prevStat,
     nextStat,
     data,
     from,
+    forceStat,
   }) {
-    assert(this.stat == prevStat);
+    if(forceStat !== false) assert(this.stat == prevStat);
     this.stat = nextStat;
 
     if (data.event_name === 'watcher draw') {
@@ -148,7 +153,8 @@ class Player extends PlayerClass {
       data: {
         event_name: 'ready'
       },
-      from: 'client'
+      from: 'client',
+      forceStat: false,
     });
   }
   cancelReady () {
@@ -158,7 +164,8 @@ class Player extends PlayerClass {
       data: {
         event_name: 'cancel ready'
       },
-      from: 'client'
+      from: 'client',
+      forceStat: false,
     });
   }
   gamePrepare () {

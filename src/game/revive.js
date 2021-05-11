@@ -24,6 +24,7 @@ class Revive extends HuntingGame {
 
 const game = new Revive({
   name: 'Clapping Game: Revive',
+  description: '重生：在猎杀时刻的基础上，每三回合所有人各获得一行动力。',
   movement_group: require('./classic').grp,
 });
 
