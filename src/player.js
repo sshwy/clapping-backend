@@ -1,7 +1,7 @@
 const { assert } = require('./utils');
 
 const logg = require('./logger');
-const { PlayerStatus, MoveName } = require('./vars');
+const { PlayerStatus } = require('./vars');
 const { PlayerClass, ClientClass, RoomClass } = require('./types');
 
 /**
@@ -80,7 +80,7 @@ class Player extends PlayerClass {
     if (data.event_name === 'response movement') {
       assert(from === 'client');
       const movement = data.movement;
-      this.log.info(`emit ${MoveName[movement.move]}, target: ${movement.target}`);
+      this.log.info(`emit ${movement.move}, target: ${movement.target}`);
       this.room.handleMovement({
         from: this.data.id,
         data: movement,
@@ -96,7 +96,7 @@ class Player extends PlayerClass {
     if (data.event_name === 'force movement') {
       assert(from === 'roomer');
       const movement = data.movement;
-      this.log.info(`emit ${MoveName[movement.move]}, target: ${movement.target}`);
+      this.log.info(`emit ${movement.move}, target: ${movement.target}`);
       this.room.handleMovement({
         from: this.data.id,
         data: movement,
@@ -202,6 +202,11 @@ class Player extends PlayerClass {
   win () {
     this.log.info('Win!');
     this.onTerminate('win');
+  }
+  revive () {
+    this.log.info('Revive.');
+    assert(this.stat == PlayerStatus.WATCHING);
+    this.stat = PlayerStatus.LISTENING;
   }
 }
 

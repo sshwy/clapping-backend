@@ -351,4 +351,8 @@ module.exports = {
   default: game,
   Game,
   grp,
+  Movement,
+  eps,
+  MoveData,
+  Move,
 }

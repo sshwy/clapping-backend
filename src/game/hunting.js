@@ -21,7 +21,7 @@ class GainPointByKill extends ClassicGame {
 }
 
 const game = new GainPointByKill({
-  name: 'Clapping Game: Hunting Time',
+  name: 'Clapping Game: Hunter',
   description: '苏醒了，猎杀时刻！在经典模式的基础上增加杀人奖励：被你命中且死亡的人会反馈给你一点行动点。',
   movement_group: require('./classic').grp,
 });

@@ -1,9 +1,10 @@
-const { RoomStatus, Move, PlayerStatus } = require('./vars');
+const { RoomStatus, PlayerStatus } = require('./vars');
 const logg = require('./logger');
 const { assert, randomId } = require('./utils');
 const { RoomClass, PlayerClass } = require('./types');
 const game_list = require('./game');
 
+const turn_timeout = 3000;
 /**
  * @class Room
  * @extends {RoomClass}
@@ -111,31 +112,34 @@ class Room extends RoomClass {
 
       const dyingPlayers = // 在这一轮死
         this.players.filter(e => data.deads.includes(e.getId()));
+      const lastTurnAlives = this.getAlive().map(e => e.getId());
+      const revivePlayers = // 这一轮复活
+        this.players.filter(e => !lastTurnAlives.includes(e.getId()) && data.alive.includes(e.getId()));
 
       this.addBattleLog(...data.log);
 
-      this.getAlive().forEach(player => {
-        player.handleEvent({
-          prevStat: PlayerStatus.SUBMITED,
-          nextStat: PlayerStatus.LISTENING,
-          from: 'roomer',
-          data: {
-            event_name: 'player draw',
-            ...data,
-          },
-        });
-      });
-
-      this.players.filter(e => e.stat === PlayerStatus.WATCHING).forEach(player => {
-        player.handleEvent({
-          prevStat: PlayerStatus.WATCHING,
-          nextStat: PlayerStatus.WATCHING,
-          from: 'roomer',
-          data: {
-            event_name: 'watcher draw',
-            ...data,
-          },
-        });
+      this.players.forEach(player => {
+        if (player.stat === PlayerStatus.SUBMITED) {
+          player.handleEvent({
+            prevStat: PlayerStatus.SUBMITED,
+            nextStat: PlayerStatus.LISTENING,
+            from: 'roomer',
+            data: {
+              event_name: 'player draw',
+              ...data,
+            },
+          });
+        } else if (player.stat === PlayerStatus.WATCHING) {
+          player.handleEvent({
+            prevStat: PlayerStatus.WATCHING,
+            nextStat: PlayerStatus.WATCHING,
+            from: 'roomer',
+            data: {
+              event_name: 'watcher draw',
+              ...data,
+            },
+          });
+        } else throw new Error(`Unknown player stat ${player.stat}`)
       });
 
       await new Promise((resolve, reject) => {
@@ -146,6 +150,9 @@ class Room extends RoomClass {
 
       dyingPlayers.forEach(player => {
         player.dead();
+      })
+      revivePlayers.forEach(player => {
+        player.revive();
       })
 
       return signal === false;
@@ -196,7 +203,7 @@ class Room extends RoomClass {
         from: 'roomer',
         data: {
           event_name: 'request movement',
-          timeout: new Date().getTime() + 15000,
+          timeout: new Date().getTime() + turn_timeout,
         },
       }));
       this.players[0].client.roomEmit('room info ingame', this.getInfo());
@@ -224,7 +231,7 @@ class Room extends RoomClass {
           }
         });
         this.players[0].client.roomEmit('room info ingame', this.getInfo());
-      }, 15000 + 1000); // 15s
+      }, turn_timeout + 500); // 15s
     });
   }
 }
