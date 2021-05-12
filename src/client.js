@@ -37,8 +37,26 @@ class Client extends ClientClass {
       });
     });
   }
-  handleRequestMovement (data) {
-    this.socket.emit('request movement', this.player.getStatus(), data.timeout);
+  handleEvent (event_name, config) {
+    const handlers = {
+      'request movement': (client, config) => {
+        client.socket.emit('request movement', client.player.getStatus(), config.timeout);
+      },
+      'draw': (client, config) => {
+        client.socket.emit('draw', config);
+      },
+      'submitted': (client, config) => {
+        client.socket.emit('submitted movement', config);
+      },
+      'register room failed': (client) => {
+        client.socket.emit('display message', 'info', '房间正在游戏中，请稍候再加入～');
+      },
+      'game prepare': (client) => {
+        client.socket.emit('game prepare');
+      },
+    };
+    if(handlers[event_name]) return handlers[event_name](this, config);
+    throw new Error(`Unknown event '${event_name}'`);
   }
   handleTerminate (signal) {
     this.socket.emit(signal);
@@ -46,19 +64,6 @@ class Client extends ClientClass {
   handleRoomListDisplay (is_update = false) {
     if (is_update) this.socket.emit('room list update', roomStore.getAll().map(room => room.getInfo()));
     else this.socket.emit('room list', roomStore.getAll().map(room => room.getInfo()));
-  }
-  handleSubmitted () {
-    this.socket.emit('submitted movement', this.player.tmp_storage);
-  }
-  handleRegisterRoomFailed () {
-    this.socket.emit('display message', 'info', '房间正在游戏中，请稍候再加入～');
-    // to do
-  }
-  handleGamePrepare () {
-    this.socket.emit('game prepare');
-  }
-  handleDrawing (data) {
-    this.socket.emit('draw', data);
   }
   handleTalk (text) {
     assert(this.player.room);
@@ -95,11 +100,11 @@ class Client extends ClientClass {
     if (this.player.stat === PlayerStatus.INITIALIZED) {
       this.handleRoomListDisplay();
     } else if (this.player.stat === PlayerStatus.ACTING) {
-      this.handleRequestMovement(this.player.tmp_storage); // ERROR!!!!
+      this.handleEvent('request movement', this.player.tmp_storage);
     } else if (this.player.stat === PlayerStatus.WATCHING) {
       this.handleTerminate(this.player.tmp_storage);
     } else if (this.player.stat === PlayerStatus.SUBMITED) {
-      this.handleSubmitted();
+      this.handleEvent('submitted', this.player.tmp_storage);
     }
   }
 }

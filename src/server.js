@@ -1,5 +1,6 @@
 const httpServer = require("http").createServer();
 const { createServer } = require('vite')
+// @ts-ignore
 const io = require("socket.io")(httpServer, {
   cors: {
     origin: "http://192.168.110.228:8080",

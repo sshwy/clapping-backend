@@ -41,19 +41,14 @@ class Player extends PlayerClass {
     this.room = undefined;
   }
   handleRegisterRoomFailed () {
-    this.client.handleRegisterRoomFailed();
+    this.client.handleEvent('register room failed');
   }
   /**
    * forceStat: 要不要 assert stat
    * @memberof Player
    */
-  handleEvent ({
-    prevStat,
-    nextStat,
-    data,
-    from,
-    forceStat,
-  }) {
+  handleEvent (event) {
+    const { prevStat, nextStat, data, from, forceStat } = event;
     if(forceStat !== false) assert(this.stat == prevStat);
     this.stat = nextStat;
 
@@ -64,7 +59,7 @@ class Player extends PlayerClass {
         ...data,
         game_id: this.room.game_id,
       };
-      this.client.handleDrawing(this.tmp_storage);
+      this.client.handleEvent('draw', this.tmp_storage);
     }
     if (data.event_name === 'player draw') {
       assert(from === 'roomer');
@@ -74,12 +69,12 @@ class Player extends PlayerClass {
         ...data,
         game_id: this.room.game_id,
       };
-      this.client.handleDrawing(this.tmp_storage);
+      this.client.handleEvent('draw', this.tmp_storage);
     }
     if (data.event_name === 'request movement') {
       assert(from === 'roomer');
       this.tmp_storage = data;
-      this.client.handleRequestMovement(data);
+      this.client.handleEvent('request movement', data);
     }
     if (data.event_name === 'response movement') {
       assert(from === 'client');
@@ -95,7 +90,7 @@ class Player extends PlayerClass {
         to: this.room.alive_players.find(e => e.data.id === movement.target)?.data.name,
         move: movement.move
       };
-      this.client.handleSubmitted(this.tmp_storage);
+      this.client.handleEvent('submitted', this.tmp_storage);
     }
     if (data.event_name === 'force movement') {
       assert(from === 'roomer');
@@ -110,7 +105,7 @@ class Player extends PlayerClass {
         to: this.room.alive_players.find(e => e.data.id === movement.target)?.data.name,
         move: movement.move
       };
-      this.client.handleSubmitted(this.tmp_storage);
+      this.client.handleEvent('submitted', this.tmp_storage);
     }
     if (data.event_name === 'finish drawing') {
       this.log.info('finish drawing');
@@ -132,7 +127,7 @@ class Player extends PlayerClass {
     }
     if (data.event_name === 'game prepare') {
       this.data.movePoint = 0;
-      this.client.handleGamePrepare();
+      this.client.handleEvent('game prepare');
     }
   }
   getStatus () {

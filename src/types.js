@@ -1,27 +1,23 @@
 const deepClone = require('clone-deep');
 
-/**
- * @class PlayerClass
- * @param {{name: string, id: string}}
- */
 class PlayerClass { /* abstraction */
-  constructor({ name, id }) {
+  /**
+   * Creates an instance of PlayerClass.
+   * @memberof PlayerClass
+   * @param {{name: string, id: string}} config
+   */
+  constructor(config) {
     this.data = {
-      name,
-      id,
+      ...config,
       movePoint: 0,
       movement: [],
     };
   }
   /**
-   * @param {{prevStat: number, nextStat: number, data: any, from: string}}
+   * @memberof PlayerClass
+   * @param {{prevStat: number, nextStat: number, data: any, from: string, forceStat?: boolean}} event
    */
-  handleEvent ({
-    prevStat,
-    nextStat,
-    data,
-    from,
-  }) { }
+  handleEvent (event) { }
   getStatus () { }
   getId () { }
   /**
@@ -44,32 +40,35 @@ class ClientClass {
     socket,
     player
   }) {
+    /** @member {any} */
     this.socket = socket;
     /** @member {PlayerClass} */
     this.player = player;
   }
   roomEmit (...args) { }
   reHandle () { }
+  /**
+   * @param {string} event_name
+   * @param {any} config
+   * @memberof ClientClass
+   */
+  handleEvent(event_name, config) {}
 }
 
-/**
- * @class RoomClass
- */
 class RoomClass {
   constructor(id) {
-    /** @type {number} */
+    /** @member {number} */
+    this.game_id = 0;
+    /** @member {number} */
     this.id = id;
-    /** @type {Array<PlayerClass>} */
+    /** @member {Array<PlayerClass>} */
     this.players = [];
-    /** @type {string} */
+    /** @member {string} */
     this.leader = "";
-    /**
-     * @type {Array<{ id: string, type: 'move',  from: string,  to?: string, move: number, turn: number }
-        |{ id: string, type: 'die',  die: string, turn: number }
-        |{ id: string, type: 'msg',  text: string, turn: number }
-        |{ id: string, type: 'win',  win: string, turn: number }>} data
-     */
+    /** @member {Array<BattleLog>} */
     this.battleLogList = [];
+    /** @member {number|undefined} */
+    this.turn = undefined;
   }
   getInfo () { }
   handleEvent (event) { }
@@ -84,15 +83,17 @@ class RoomClass {
    */
   unregisterPlayer (player) { }
   /**
-   * @param {{ id: string, type: 'move',  from: string,  to?: string, move: number, turn: number }
-      |{ id: string, type: 'die',  die: string, turn: number }
-      |{ id: string, type: 'msg',  text: string, turn: number }
-      |{ id: string, type: 'win',  win: string, turn: number }} data
-   * @memberof PlayerClass
+   * @param {Array<BattleLog>} list
+   * @memberof RoomClass
    */
   addBattleLog (...list) {
     this.battleLogList.unshift(...list);
   }
+  /**
+   * @param {any} movement
+   * @memberof RoomClass
+   */
+  handleMovement (movement) { }
 }
 
 /**
@@ -103,9 +104,8 @@ class RoomClass {
 class MovementClass {
   /**
    * Creates an instance of MoveClass.
-   * @memberof MoveClass
-   * @param {{ id: number, title: string|object, description: string|object, need_target: boolean,
-        point: number, attack?: number, defend?: number }} config
+   * @memberof MovementClass
+   * @param {MovementData} config
    */
   constructor(config) {
     this.config = config;
@@ -114,7 +114,7 @@ class MovementClass {
    * 获取 ID
    *
    * @return {number} 
-   * @memberof MoveClass
+   * @memberof MovementClass
    */
   getId () {
     return this.config.id;
@@ -123,11 +123,15 @@ class MovementClass {
    * 消耗的行动点数
    *
    * @return {number} 
-   * @memberof MoveClass
+   * @memberof MovementClass
    */
   getPoint () {
     return this.config.point;
   }
+  /**
+   * @return {boolean} 
+   * @memberof MovementClass
+   */
   needTarget () {
     return Boolean(this.config.need_target);
   }
@@ -210,8 +214,8 @@ class GameClass {
   getName () {
     return this.config.name;
   }
-  getMovementById (...args) {
-    return this.config.movement_group.getMovementById(...args);
+  getMovementById (arg) {
+    return this.config.movement_group.getMovementById(arg);
   }
   toJSONObject () {
     return {

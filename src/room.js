@@ -13,7 +13,6 @@ class Room extends RoomClass {
     super(id);
 
     this.game = game_list[0];
-    this.game_id = 0;
     this.stat = RoomStatus.PREPARING;
     this.log = logg.getLogger(`Room ${id}`);
     this.log.info('Created.');
