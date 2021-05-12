@@ -16,6 +16,13 @@ class Player extends PlayerClass {
     this.log = logg.getLogger(`Player ${this.data.name}`);
     this.log.info('Created.');
   }
+  bindClient (client) {
+    /** @type {ClientClass} */
+    this.client = client;
+    if (this.room) {
+      this.client.socket.join(this.room.id.toString());
+    }
+  }
   registerRoom (room) {
     assert(this.stat === PlayerStatus.INITIALIZED);
     this.stat = PlayerStatus.ROOMED;
@@ -32,13 +39,6 @@ class Player extends PlayerClass {
       this.client.socket.leave(this.room.id.toString());
     }
     this.room = undefined;
-  }
-  bindClient (client) {
-    /** @type {ClientClass} */
-    this.client = client;
-    if (this.room) {
-      this.client.socket.join(this.room.id.toString());
-    }
   }
   handleRegisterRoomFailed () {
     this.client.handleRegisterRoomFailed();

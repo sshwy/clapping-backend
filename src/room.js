@@ -184,18 +184,11 @@ class Room extends RoomClass {
         });
       });
 
-      const waiter = new Promise((resolve, reject) => {
-        var itv = setInterval(() => {
-          if (this.alive_players.every(e => e.stat === PlayerStatus.LISTENING)) {
-            clearInterval(itv);
-            resolve('ok');
-          }
-        }, 1000);
+      await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve('ok');
+        }, 2000);
       });
-
-      this.log.info('Waiting for drawing...');
-      await waiter;
-
 
       deadPlayers.forEach(player => {
         player.dead();

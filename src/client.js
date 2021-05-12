@@ -14,9 +14,7 @@ class Client extends ClientClass {
 
     this.log = logg.getLogger(`Client ${this.player.data.name}`);
     this.socket.on('movement', data => {
-      if (this.player.stat !== PlayerStatus.ACTING) {
-        this.socket.emit('display message', 'info', '你似乎超时啦～系统帮你 随 机 选了一个操作哦');
-      } else {
+      if (this.player.stat === PlayerStatus.ACTING) {
         this.player.handleEvent({
           prevStat: PlayerStatus.ACTING,
           nextStat: PlayerStatus.SUBMITED,
