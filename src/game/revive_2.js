@@ -41,6 +41,6 @@ const game = new Revive2({
 });
 
 module.exports = {
-  Game: Revive,
+  Game: Revive2,
   default: game,
 }

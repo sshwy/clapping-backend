@@ -1,4 +1,4 @@
-const Checklist = require('./revive_2').Game;
+const Revive2 = require('./revive_2').Game;
 const MovementClass = require('./classic').Movement;
 const eps = require('./classic').eps;
 const { MovementGroup } = require('../types');
@@ -28,7 +28,7 @@ class Movement extends MovementClass {
   }
 }
 
-class Infinite extends Checklist {
+class Infinite extends Revive2 {
   constructor(config) {
     super(config);
   }
@@ -43,7 +43,6 @@ class Infinite extends Checklist {
     let tot_aoe_attack = 0;
     for (const id in player_movements) { // 统计场上的 AOE 伤害总和
       const i = player_movements[id];
-      console.log('i', i);
       //@ts-ignore
       if (this.getMovementById(i.move).isSweeps()) {
         tot_aoe_attack += (move => {

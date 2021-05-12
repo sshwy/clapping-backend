@@ -4,7 +4,7 @@ const { assert, randomId } = require('./utils');
 const { RoomClass, PlayerClass } = require('./types');
 const game_list = require('./game');
 
-const turn_timeout = 3000;
+const turn_timeout = 15000;
 /**
  * @class Room
  * @extends {RoomClass}
