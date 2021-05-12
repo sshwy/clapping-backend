@@ -12,8 +12,23 @@ class Client extends ClientClass {
   constructor(data) {
     super(data);
 
+    var action_ban = false;
+    const debounce = socket => {
+      if (action_ban) {
+        socket.emit('display message', 'error', 'WDNMD 能不能给爷死？？？');
+        return true;
+      } else {
+        action_ban = true;
+        setTimeout(() => {
+          action_ban = false;
+        }, 200);
+        return false;
+      }
+    }
+
     this.log = logg.getLogger(`Client ${this.player.data.name}`);
     this.socket.on('movement', data => {
+      if (debounce(this.socket)) return;
       if (this.player.stat === PlayerStatus.ACTING) {
         this.player.handleEvent({
           prevStat: PlayerStatus.ACTING,
@@ -27,6 +42,7 @@ class Client extends ClientClass {
       }
     });
     this.socket.on('choose game', game_id => {
+      if (debounce(this.socket)) return;
       this.player.room.handleEvent({
         event_name: 'choose game',
         game_id: game_id,
