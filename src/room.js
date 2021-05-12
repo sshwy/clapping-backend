@@ -161,7 +161,7 @@ class Room extends RoomClass {
       this.alive_players.forEach(player => {
         player.handleEvent({
           prevStat: PlayerStatus.SUBMITED,
-          nextStat: PlayerStatus.DRAWING,
+          nextStat: PlayerStatus.SUBMITED,
           from: 'roomer',
           data: {
             event_name: 'player draw',

@@ -11,7 +11,6 @@ const PlayerStatus = {
   LISTENING: 3,
   ACTING: 4,
   SUBMITED: 5,
-  DRAWING: 6,
   WATCHING: 7,
 }
 

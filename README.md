@@ -18,8 +18,9 @@ graph TD
 A(Initialized) ---|Join/Leave Room| B(Roomed)
 B -->|Get/Cancel Ready| C(Ready)
 C -->|Game Start| D(Listening)
-D -->|Terminate| F(Watching) 
-F -->|Client/Roomer: Quit| B
+D -->|Hitted| F(Watching) 
+F -->|Roomer: Quit| B
+F -->|Roomer: Revive| D
 D -->|Roomer: Request Movement| G(Acting)
 G -->|Client: Movement| E(Submited)
 E -->|Roomer: Result| H(Drawing)

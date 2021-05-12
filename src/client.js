@@ -26,19 +26,6 @@ class Client extends ClientClass {
         });
       }
     });
-    this.socket.on('finish draw', () => {
-      this.player.handleEvent({
-        prevStat: PlayerStatus.DRAWING,
-        nextStat: PlayerStatus.LISTENING,
-        from: 'client',
-        data: {
-          event_name: 'finish drawing'
-        },
-      });
-    });
-    this.socket.on('watcher finish draw', () => {
-      // do nothing
-    });
     this.socket.on('choose game', game_id => {
       this.player.room.handleEvent({
         event_name: 'choose game',
@@ -55,9 +42,6 @@ class Client extends ClientClass {
   }
   handleTerminate (signal) {
     this.socket.emit(signal);
-  }
-  handleDrawing (data) {
-    this.socket.emit('draw', data);
   }
   handleRoomListDisplay (is_update = false) {
     if (is_update) this.socket.emit('room list update', roomStore.getAll().map(room => room.getInfo()));
@@ -109,8 +93,6 @@ class Client extends ClientClass {
       this.handleRoomListDisplay();
     } else if (this.player.stat === PlayerStatus.ACTING) {
       this.handleRequestMovement(this.player.tmp_storage); // ERROR!!!!
-    } else if (this.player.stat === PlayerStatus.DRAWING) {
-      this.handleDrawing(this.player.tmp_storage);
     } else if (this.player.stat === PlayerStatus.WATCHING) {
       this.handleTerminate(this.player.tmp_storage);
     } else if (this.player.stat === PlayerStatus.SUBMITED) {
