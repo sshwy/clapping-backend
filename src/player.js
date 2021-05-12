@@ -191,7 +191,7 @@ class Player extends PlayerClass {
   }
   onTerminate (signal) {
     assert(this.stat == PlayerStatus.LISTENING);
-    this.client.handleTerminate(signal);
+    this.client.handleEvent('go watching', signal);
     this.tmp_storage = signal;
     this.stat = PlayerStatus.WATCHING;
   }

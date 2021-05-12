@@ -54,12 +54,12 @@ class Client extends ClientClass {
       'game prepare': (client) => {
         client.socket.emit('game prepare');
       },
+      'go watching': (client, config) => {
+        client.socket.emit(config);
+      },
     };
-    if(handlers[event_name]) return handlers[event_name](this, config);
+    if (handlers[event_name]) return handlers[event_name](this, config);
     throw new Error(`Unknown event '${event_name}'`);
-  }
-  handleTerminate (signal) {
-    this.socket.emit(signal);
   }
   handleRoomListDisplay (is_update = false) {
     if (is_update) this.socket.emit('room list update', roomStore.getAll().map(room => room.getInfo()));
@@ -102,7 +102,7 @@ class Client extends ClientClass {
     } else if (this.player.stat === PlayerStatus.ACTING) {
       this.handleEvent('request movement', this.player.tmp_storage);
     } else if (this.player.stat === PlayerStatus.WATCHING) {
-      this.handleTerminate(this.player.tmp_storage);
+      this.handleEvent('go watching', this.player.tmp_storage);
     } else if (this.player.stat === PlayerStatus.SUBMITED) {
       this.handleEvent('submitted', this.player.tmp_storage);
     }
