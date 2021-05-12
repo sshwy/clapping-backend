@@ -57,6 +57,9 @@ class Client extends ClientClass {
   handleGamePrepare () {
     this.socket.emit('game prepare');
   }
+  handleDrawing (data) {
+    this.socket.emit('draw', data);
+  }
   handleTalk (text) {
     assert(this.player.room);
     if (text.length > 50) return;
