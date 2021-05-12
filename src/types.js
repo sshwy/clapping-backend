@@ -52,7 +52,7 @@ class ClientClass {
    * @param {any} config
    * @memberof ClientClass
    */
-  handleEvent(event_name, config) {}
+  handleEvent (event_name, config) { }
 }
 
 class RoomClass {
@@ -224,7 +224,24 @@ class GameClass {
       movement_group: this.config.movement_group.toJSONObject(),
     };
   }
-  calculateEffect () { }
+  calculateEffect (...args) { }
+  /**
+   * 给出玩家的行动，计算结果
+   *
+   * @param {any} args
+   * @memberof GameClass
+   */
+  handleTurn (...args) { }
+  /**
+   * 利用 handleTurn 计算的结果检查游戏进度，决定是否需要结束
+   *
+   * @param {any} args
+   * @return {[boolean, any]}
+   * @memberof GameClass
+   */
+  detectGameOver (...args) {
+    return [false, null];
+  }
 };
 
 module.exports = {

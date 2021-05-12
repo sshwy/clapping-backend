@@ -5,16 +5,17 @@ class GainPointByKill extends ClassicGame {
     super(config);
   }
   /**
-   * @param {Array<{ id: string, move: number, target: string }>} player_movements
-   * @param {{ turn: number }} config
-   * @return {{ [string]: { move: number, target: string, injury: number, filtered_injury: number, hit: string[], hitted: string[] } }}
+   * @param {ResponseMovementMap} player_movements
+   * @param {TurnConfig} config
+   * @return {TurnResult}
    * @memberof GainPointByKill
    */
-  handleTurn(player_movements, config) {
+  handleTurn (player_movements, config) {
     const data = super.handleTurn(player_movements, config);
-    player_movements.forEach(i => {
-      data[i.id].delta_point += data[i.id].hit.length; // 点数加上杀的人数
-    });
+    for (const id in player_movements) {
+      const i = player_movements[id];
+      data.player_result[i.id].delta_point += data.player_result[i.id].hit.length; // 点数加上杀的人数
+    }
     return data;
   }
 }

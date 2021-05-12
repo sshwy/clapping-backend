@@ -5,17 +5,24 @@ class Revive extends HuntingGame {
     super(config);
   }
   /**
-   * @param {Array<{ id: string, move: number, target: string }>} player_movements
-   * @param {{ turn: number }} config
-   * @return {{ [string]: { move: number, target: string, injury: number, filtered_injury: number, hit: string[], hitted: string[] } }}
+   * @param {ResponseMovementMap} player_movements
+   * @param {TurnConfig} config
+   * @return {TurnResult}
    * @memberof GainPointByKill
    */
   handleTurn (player_movements, config) {
     const data = super.handleTurn(player_movements, config);
     if (config.turn % 3 === 0) {
       console.log('extra point at turn ' + config.turn);
-      player_movements.forEach(i => {
-        data[i.id].delta_point ++; // 每三回合加一口气
+      for (const id in player_movements) {
+        const i = player_movements[id];
+        data.player_result[i.id].delta_point++; // 每三回合加一口气
+      }
+      data.log.unshift({
+        type: 'msg',
+        id: `revive-${config.turn}`,
+        turn: config.turn,
+        text: '全体玩家获得一点行动力！'
       });
     }
     return data;

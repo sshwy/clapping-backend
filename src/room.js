@@ -88,84 +88,40 @@ class Room extends RoomClass {
     const runTurn = async () => {
       this.turn++;
       this.log.info(`Round ${this.turn}`);
-      this.log.info('still alive:', this.alive_players.map(e => `${e.data.name}(${e.data.movePoint})`).join(', '));
+      this.log.info('still alive:', this.players
+        .filter(e => e.stat !== PlayerStatus.WATCHING)
+        .map(e => `${e.data.name}(${e.data.movePoint})`).join(', '));
 
+      // Step 1: 获取玩家的所有行动
+
+      /** @type {ResponseMovementMap} */
       const res = await this.requestMovement();
       clearTimeout(this.req_movement_time_limit);
 
-      // console.log('res', res);
-      const movements = res.map((e, index) => ({
-        id: this.alive_players[index].getId(),
-        move: e.move,
-        target: e.target,
-      }));
-      const data = this.game.handleTurn(movements, {
+      // Step 2: 计算这一局游戏结果
+      //   只有活着的玩家才能行动。但是玩家的行动可能会影响到死去的玩家（复活）
+      //   为此返回值要包含玩家死活状态
+
+      const turn_config = {
         turn: this.turn,
-      });
+        player_list: this.players.map(e => e.getStatus()),
+      };
+      const origin_data = this.game.handleTurn(res, turn_config);
+      const [signal, data] = this.game.detectGameOver(origin_data, turn_config);
 
-      // console.log('data', data);
+      const dyingPlayers = // 在这一轮死
+        this.players.filter(e => data.deads.includes(e.getId()));
 
-      const deadPlayers =
-        this.alive_players.filter(player => data[player.getId()].filtered_injury > 0);
-      const nextRoundPlayers =
-        this.alive_players.filter((player, i) => !(data[player.getId()].filtered_injury > 0));
+      this.addBattleLog(...data.log);
 
-      const appendLog = this.alive_players.map(e => e.data).map((e, idx, arr) => {
-        const mv = data[e.id];
-        const tar = mv.target
-          ? arr.filter((e) => e.id === mv.target)[0].name
-          : "";
-        return {
-          type: 'move',
-          id: `move-${e.id}-${mv.move}-${tar}-${this.turn}`,
-          from: e.name,
-          move: mv.move,
-          to: tar,
-          turn: this.turn,
-        };
-      });
-      const deads = deadPlayers.map(e => e.getStatus()).map((e) => {
-        return {
-          type: 'die',
-          id: `die-${e.self.id}-${this.turn}`,
-          die: e.self.name,
-          by: data[e.self.id].hitted.map(id => this.alive_players.find(e => e.getId() === id)?.data.name || id),
-            // 找不到 player 的话说明是其他原因
-          turn: this.turn,
-        };
-      });
-
-      const newLogs = [...deads, ...appendLog];
-
-      if (nextRoundPlayers.length === 1) {
-        const winner = nextRoundPlayers[0];
-        newLogs.unshift({
-          type: 'win',
-          id: `win-${winner.data.id}-${this.turn}`,
-          win: winner.data.name,
-          turn: this.turn,
-        });
-      } else if (nextRoundPlayers.length === 0) {
-        newLogs.unshift({
-          type: 'msg',
-          id: `message-${randomId()}-${this.turn}`,
-          text: '全部木大（憨笑）',
-          turn: this.turn,
-        });
-        // to do
-      }
-
-      this.addBattleLog(...newLogs);
-
-      this.alive_players.forEach(player => {
+      this.getAlive().forEach(player => {
         player.handleEvent({
           prevStat: PlayerStatus.SUBMITED,
           nextStat: PlayerStatus.LISTENING,
           from: 'roomer',
           data: {
             event_name: 'player draw',
-            movement_map: data,
-            logs: newLogs,
+            ...data,
           },
         });
       });
@@ -177,8 +133,7 @@ class Room extends RoomClass {
           from: 'roomer',
           data: {
             event_name: 'watcher draw',
-            movement_map: data,
-            logs: newLogs,
+            ...data,
           },
         });
       });
@@ -189,11 +144,11 @@ class Room extends RoomClass {
         }, 2000);
       });
 
-      deadPlayers.forEach(player => {
+      dyingPlayers.forEach(player => {
         player.dead();
       })
 
-      this.alive_players = nextRoundPlayers;
+      return signal === false;
     };
 
     return new Promise((resolve, reject) => {
@@ -204,8 +159,6 @@ class Room extends RoomClass {
         this.stat = RoomStatus.PLAYING;
         this.battleLogList = [];
         this.turn = 0;
-        /** @type {Array<PlayerClass>} */
-        this.alive_players = this.players;
         this.players.forEach(e => {
           e.gamePrepare();
         });
@@ -213,12 +166,7 @@ class Room extends RoomClass {
         this.players[0].client.roomEmit('room info ingame', this.getInfo());
 
         // play
-        while (this.alive_players.length > 1) {
-          await runTurn();
-        }
-        if (this.alive_players.length) {
-          this.alive_players[0].win();
-        }
+        while (await runTurn());
 
         // end
         setTimeout(() => { // wait for 5s
@@ -230,16 +178,19 @@ class Room extends RoomClass {
       })();
     });
   }
+  getAlive () {
+    return this.players.filter(e => e.stat !== PlayerStatus.WATCHING);
+  }
   handleMovement ({ from, data }) {
     this._response_rest_counter--;
-    this._response[this.alive_players.findIndex(e => e.data.id === from)] = data;
+    this._response[from] = data;
   }
   requestMovement () {
-    this._response = new Array(this.alive_players.length);
-    this._response_rest_counter = this.alive_players.length;
+    this._response = {};
+    this._response_rest_counter = this.getAlive().length;
 
     return new Promise((resolve, reject) => {
-      this.alive_players.forEach(e => e.handleEvent({
+      this.getAlive().forEach(e => e.handleEvent({
         prevStat: PlayerStatus.LISTENING,
         nextStat: PlayerStatus.ACTING,
         from: 'roomer',
@@ -248,7 +199,7 @@ class Room extends RoomClass {
           timeout: new Date().getTime() + 15000,
         },
       }));
-      this.alive_players[0].client.roomEmit('room info ingame', this.getInfo());
+      this.players[0].client.roomEmit('room info ingame', this.getInfo());
       const checker = setInterval(() => {
         if (this._response_rest_counter === 0) {
           clearInterval(checker);
@@ -256,7 +207,7 @@ class Room extends RoomClass {
         }
       }, 1000);
       this.req_movement_time_limit = setTimeout(() => {
-        this.alive_players.forEach(player => {
+        this.players.forEach(player => {
           if (player.stat === PlayerStatus.ACTING) { // time out
             player.handleEvent({
               prevStat: PlayerStatus.ACTING,
@@ -272,7 +223,7 @@ class Room extends RoomClass {
             });
           }
         });
-        this.alive_players[0].client.roomEmit('room info ingame', this.getInfo());
+        this.players[0].client.roomEmit('room info ingame', this.getInfo());
       }, 15000 + 1000); // 15s
     });
   }

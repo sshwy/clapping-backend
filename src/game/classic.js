@@ -185,9 +185,9 @@ class Game extends GameClass {
   /**
    * 给出玩家的行动，计算结果
    *
-   * @param {Array<{ id: string, move: number, target: string }>} player_movements
-   * @param {{ turn: number }} config
-   * @return {{ [string]: { move: number, target: string, injury: number, filtered_injury: number, hit: string[], hitted: string[] } }}
+   * @param {ResponseMovementMap} player_movements
+   * @param {TurnConfig} config
+   * @return {TurnResult}
    * @memberof Game
    */
   handleTurn (player_movements, config) {
@@ -208,9 +208,16 @@ class Game extends GameClass {
     };
 
     const effect_map = {};
+    /** @type {PlayerResultMap} */
     const result = {};
+    /** @type {string[]} */
+    const alive = [], deads = [];
 
-    player_movements.forEach(i => {
+    for (const id in player_movements) {
+      player_movements[id].id = id;
+    }
+    for (const id in player_movements) {
+      const i = player_movements[id];
       effect_map[i.id] = {};
       result[i.id] = {
         move: i.move,
@@ -221,29 +228,37 @@ class Game extends GameClass {
         hitted: [],
         delta_point: -this.getMovementById(i.move).getPoint(),
       };
-      player_movements.forEach(j => {
+      for (const jd in player_movements) {
+        const j = player_movements[jd];
         const mi = this.getMovementById(i.move);
         const mj = this.getMovementById(j.move);
+        // @ts-ignore
         effect_map[i.id][j.id] = this.calculateEffect(mi, mj,
           !mi.needTarget() || i.target === j.id,
           !mj.needTarget() || j.target === i.id);
-      });
-    });
+      }
+    }
 
-    player_movements.forEach(i => {
-      player_movements.forEach(j => {
+    for (const id in player_movements) {
+      const i = player_movements[id];
+      for (const jd in player_movements) {
+        const j = player_movements[jd];
+
         if (j.id !== i.id) {
           const recive = effect_map[j.id][i.id], send = effect_map[i.id][j.id];
           if (recive > send) {
             result[i.id].injury += recive - send;
           }
         }
-      });
+      }
       result[i.id].filtered_injury = calcRealInjury(i.move, result[i.id].injury);
-    });
+    }
 
-    player_movements.forEach(i => {
-      player_movements.forEach(j => {
+    for (const id in player_movements) {
+      const i = player_movements[id];
+      for (const jd in player_movements) {
+        const j = player_movements[jd];
+
         if (j.id !== i.id) {
           const recive = effect_map[j.id][i.id], send = effect_map[i.id][j.id];
           if (send > recive && result[j.id].filtered_injury > 0) {
@@ -253,10 +268,73 @@ class Game extends GameClass {
             result[i.id].hitted.push(j.id);
           }
         }
-      });
-    });
+      }
+    }
 
-    return result;
+    const log_list = [];
+
+    for (const id in player_movements) {
+      const i = player_movements[id];
+      log_list.unshift({
+        type: 'move',
+        id: `move-${id}-${i.move}-${i.target}-${config.turn}`,
+        from: id,
+        move: i.move,
+        to: i.target,
+        turn: config.turn,
+      });
+    }
+    for (const id in result) {
+      const i = result[id];
+      if (i.filtered_injury > 0) {
+        log_list.unshift({
+          type: 'die',
+          id: `die-${id}-${config.turn}`,
+          die: id,
+          by: i.hitted, // 找不到 player 的话说明是其他原因
+          turn: config.turn,
+        });
+        deads.push(id);
+      } else { // 存活
+        alive.push(id);
+      }
+    }
+
+    // console.log(config.turn, result);
+    return {
+      player_result: result,
+      log: log_list,
+      alive: alive,
+      deads: deads,
+    }
+  }
+  /**
+   * 利用 handleTurn 计算的结果检查游戏进度，决定是否需要结束
+   *
+   * @param {TurnResult} data
+   * @return {[boolean, TurnResult]} 如果 true 则结束游戏
+   * @memberof Game
+   */
+  detectGameOver (data, config) {
+    if (data.alive.length === 1) {
+      const wid = data.alive[0];
+      data.log.unshift({
+        type: 'win',
+        id: `win-${wid}-${config.turn}`,
+        win: wid,
+        turn: config.turn,
+      });
+      return [true, data];
+    } else if (data.alive.length === 0) {
+      data.log.unshift({
+        type: 'msg',
+        id: `message--${config.turn}`,
+        text: '全部木大（憨笑）',
+        turn: config.turn,
+      });
+      return [true, data];
+    }
+    return [false, data];
   }
 }
 

@@ -5,19 +5,31 @@ class Revive2 extends Revive {
     super(config);
   }
   /**
-   * @param {Array<{ id: string, move: number, target: string }>} player_movements
-   * @param {{ turn: number }} config
-   * @return {{ [string]: { move: number, target: string, injury: number, filtered_injury: number, hit: string[], hitted: string[] } }}
+   * @param {ResponseMovementMap} player_movements
+   * @param {TurnConfig} config
+   * @return {TurnResult}
    * @memberof GainPointByKill
    */
   handleTurn (player_movements, config) {
     const data = super.handleTurn(player_movements, config);
-    player_movements.forEach(i => {
-      if(this.getMovementById(i.move).isSweeps() && data[i.id].hit.length === 0) {
-        data[i.id].filtered_injury = 1;
-        data[i.id].hitted.push('刃波');
+    for (const id in player_movements) {
+      const i = player_movements[id];
+      //@ts-ignore
+      if (this.getMovementById(i.move).isSweeps() && data.player_result[id].hit.length === 0) {
+        data.player_result[id].filtered_injury = 1;
+        data.player_result[id].hitted.push('刃波');
+        data.log.unshift({
+          type: 'msg',
+          id: `sweepkill-${id}-${config.turn}`,
+          turn: config.turn,
+          from: id,
+          text: '被「刃波」反杀了'
+        });
+
+        data.alive = data.alive.filter(e => e !== id);
+        if (!data.deads.includes(id)) data.deads.push(id);
       }
-    });
+    }
     return data;
   }
 }

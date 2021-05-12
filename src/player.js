@@ -12,6 +12,7 @@ class Player extends PlayerClass {
   constructor(data) {
     super(data);
 
+    /** @member {number} */
     this.stat = PlayerStatus.INITIALIZED;
     this.log = logg.getLogger(`Player ${this.data.name}`);
     this.log.info('Created.');
@@ -49,7 +50,7 @@ class Player extends PlayerClass {
    */
   handleEvent (event) {
     const { prevStat, nextStat, data, from, forceStat } = event;
-    if(forceStat !== false) assert(this.stat == prevStat);
+    if (forceStat !== false) assert(this.stat == prevStat);
     this.stat = nextStat;
 
     if (data.event_name === 'watcher draw') {
@@ -63,7 +64,7 @@ class Player extends PlayerClass {
     }
     if (data.event_name === 'player draw') {
       assert(from === 'roomer');
-      this.applyMovement(data.movement_map[this.getId()]);
+      this.applyMovement(data.player_result[this.getId()]);
       this.log.info('drawing');
       this.tmp_storage = {
         ...data,
@@ -87,7 +88,7 @@ class Player extends PlayerClass {
       this.client.roomEmit('room info ingame', this.room.getInfo());
       this.tmp_storage = {
         from: this.data.name,
-        to: this.room.alive_players.find(e => e.data.id === movement.target)?.data.name,
+        to: this.room.players.find(e => e.data.id === movement.target)?.data.name,
         move: movement.move
       };
       this.client.handleEvent('submitted', this.tmp_storage);
@@ -102,7 +103,7 @@ class Player extends PlayerClass {
       });
       this.tmp_storage = {
         from: this.data.name,
-        to: this.room.alive_players.find(e => e.data.id === movement.target)?.data.name,
+        to: this.room.players.find(e => e.data.id === movement.target)?.data.name,
         move: movement.move
       };
       this.client.handleEvent('submitted', this.tmp_storage);
@@ -137,7 +138,7 @@ class Player extends PlayerClass {
       self: this.data,
       roomId: this.room.id,
       turn: this.room.turn,
-      playerList: this.room.alive_players.map(e => e.data)
+      playerList: this.room.players.map(e => e.data)
     };
     return status;
   }
