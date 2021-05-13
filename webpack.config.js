@@ -22,7 +22,7 @@ const config = {
   target: 'node', // 打包为 node.js 后端应用
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'app.js',
+    filename: 'clapping-game-app.js',
   },
   node: {
     __dirname: true // 允许使用 __dirname 全局变量

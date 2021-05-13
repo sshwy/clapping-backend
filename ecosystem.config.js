@@ -1,7 +1,12 @@
+const entry = process.env.production ? './app.js' : './dist/app.js';
+
+console.log(entry);
+console.log(process.env);
+
 module.exports = {
   apps: [{
     name: 'clapping-game',
-    script: './dist/app.js',
+    script: entry,
     watch: '.'
   }],
 

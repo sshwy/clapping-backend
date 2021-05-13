@@ -1,5 +1,12 @@
 #!/bin/zsh
+
+rm -rf ./dist/
 yarn build-dev
+
+cp ./scripts/serve.sh ./dist/
+
+echo Deploy to server...
+
 cd dist
 git init
 git remote add deploy-server git@sshwy.name:clapping-game.git
