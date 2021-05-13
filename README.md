@@ -2,6 +2,36 @@
 
 [游戏规则](./gamerule.zh.md)
 
+## 开发构建
+
+构建开发模式（带有 source map)：
+
+```bash
+yarn run build-dev
+```
+
+构建生产版本：
+
+```bash
+yarn run build
+```
+
+直接启动开发服务器（nodemon）：
+
+```bash
+yarn serve
+```
+
+## 运行维护
+
+使用 `pm2` 管理进程。需要 `npm install pm2 -g` 安装。
+
+进程控制：
+
+```bash
+pm2 [start|restart|stop|delete] clapping-game-backend
+```
+
 ## 状态管理
 
 `Room` 对象的主要任务是维护游戏逻辑的实现。`Player` 对象充当玩家，而 `Client` 充当用户。
@@ -18,7 +48,7 @@ graph TD
 A(Initialized) ---|Join/Leave Room| B(Roomed)
 B -->|Get/Cancel Ready| C(Ready)
 C -->|Game Start| D(Listening)
-D -->|Hitted| F(Watching) 
+D -->|Hitted| F(Watching)
 F -->|Roomer: Quit| B
 F -->|Roomer: Revive| D
 D -->|Roomer: Request Movement| G(Acting)
@@ -38,4 +68,3 @@ B -->|Request Movement| C(Waiting)
 C -->|All Players Responsed| B
 B -->|Game Over| A
 ```
-
