@@ -2,4 +2,9 @@
 
 echo Running Post Receive Hook
 
-git clone /home/git/clapping-game.git /home/git/tmpgit
+rm -rf /var/clapping-game
+git clone /home/git/clapping-game.git /var/clapping-game
+cd /var/clapping-game
+yarn install
+yarn build-dev
+pm2 start

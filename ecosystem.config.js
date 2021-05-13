@@ -1,6 +1,6 @@
 module.exports = {
   apps: [{
-    name: 'clapping-game-backend',
+    name: 'clapping-game',
     script: './dist/app.js',
     watch: '.'
   }],

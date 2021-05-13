@@ -29,7 +29,7 @@ yarn serve
 进程控制：
 
 ```bash
-pm2 [start|restart|stop|delete] clapping-game-backend
+pm2 [start|restart|stop|delete] clapping-game
 ```
 
 ## 状态管理
