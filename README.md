@@ -22,6 +22,12 @@ yarn run build
 yarn serve
 ```
 
+构建 Docker 镜像：
+
+```bash
+docker build --tag clapping-game:VERSON_TAG .
+```
+
 ## 运行维护
 
 使用 `pm2` 管理进程。需要 `npm install pm2 -g` 安装。

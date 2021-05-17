@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "serve": "nodemon src/index.js",
+    "serve-prod": "node dist/app.js",
     "build": "webpack --mode=production",
     "build-dev": "webpack --mode=development"
   },
