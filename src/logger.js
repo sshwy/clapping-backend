@@ -29,7 +29,7 @@ logger.methodFactory = function (methodName, logLevel, loggerName) {
     const datePrefix = new Date().toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, '$1');
     fs.appendFileSync(`runtime.${methodName || 'unknown'}.log`, `[${datePrefix}] (${String(loggerName)}): ${message}\n`, 'utf8');
 
-    rawMethod("Newsflash: " + message);
+    rawMethod(message);
   };
 };
 
