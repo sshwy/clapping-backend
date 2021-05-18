@@ -10,7 +10,7 @@ const MoveData = [
     title: '复活', point: 0, attack: 0, defend: 0,
     description: '复活一个场上已死亡的人，并在此回合内给其一点防御值。',
     background_color: '#8bc34a', background_color_hover: '#689f38',
-    image_list: ['/resouce/image/game-classic/REVIVE.png'],
+    image_list: ['/image/game-classic/REVIVE.png'],
   }
 ];
 
