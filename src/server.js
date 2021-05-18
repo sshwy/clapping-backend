@@ -10,9 +10,10 @@ const io = require("socket.io")(httpServer, {
   },
 });
 
+const argv = require("./cli");
 
-httpServer.listen(3000, () =>
-  console.log(`\nserver (with WebSocket) listening at http://localhost:${3000}, origin: ${wsOrigin}`)
+httpServer.listen(argv.port, () =>
+  console.log(`\nserver (with WebSocket) listening at port ${argv.port}, origin: ${wsOrigin}`)
 );
 
 module.exports = { io, }
