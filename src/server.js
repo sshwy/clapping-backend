@@ -1,6 +1,6 @@
 const httpServer = require("http").createServer();
 const wsOrigin = process.env.NODE_ENV === 'production'
-  ? 'http://clap.sshwy.name'
+  ? 'https://clap.sshwy.name'
   : "http://localhost:8080";
 
 // @ts-ignore
