@@ -4,9 +4,8 @@ ENV NODE_ENV=production
 EXPOSE 3000
 
 WORKDIR /app
-COPY ["package.json", "./"]
-RUN npm install --include=dev
-COPY . .
-RUN npm run build
+COPY ["package.json", "."]
+RUN npm install
+ADD ["./dist", "."]
 
-CMD npm run serve-prod
+CMD node app.js -p 3000
