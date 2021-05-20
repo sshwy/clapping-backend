@@ -56,6 +56,11 @@ class ClientClass {
 }
 
 class RoomClass {
+  /**
+   * Creates an instance of RoomClass.
+   * @param {number} id 房间编号
+   * @memberof RoomClass
+   */
   constructor(id) {
     /** @member {number} */
     this.game_id = 0;
@@ -83,7 +88,7 @@ class RoomClass {
    */
   unregisterPlayer (player) { }
   /**
-   * @param {Array<BattleLog>} list
+   * @param {Array<import('../global').BattleLog>} list
    * @memberof RoomClass
    */
   addBattleLog (...list) {
@@ -105,7 +110,7 @@ class MovementClass {
   /**
    * Creates an instance of MoveClass.
    * @memberof MovementClass
-   * @param {MovementData} config
+   * @param {import('../global').MovementData} config
    */
   constructor(config) {
     this.config = config;
@@ -136,7 +141,7 @@ class MovementClass {
     return Boolean(this.config.need_target);
   }
   /**
-   * @return {MovementData} 
+   * @return {import('../global').MovementData} 
    * @memberof MovementClass
    */
   toJSONObject () {
@@ -240,7 +245,7 @@ class GameClass {
    * 利用 handleTurn 计算的结果检查游戏进度，决定是否需要结束
    *
    * @param {any} args
-   * @return {[boolean, any]}
+   * @return {[boolean, any]} 若返回的第一个值为 true 则游戏结束
    * @memberof GameClass
    */
   detectGameOver (...args) {

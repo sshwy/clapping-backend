@@ -1,3 +1,5 @@
+import { MovementData } from "../common";
+
 interface LogType {
   id: string;
   type: string;
@@ -20,21 +22,6 @@ interface WinLog extends WinLog {
 }
 
 type BattleLog = MoveLog | DieLog | MsgLog | WinLog;
-
-type MovementData = {
-  id: number;
-  title: string | object;
-  description: string | object;
-  need_target?: boolean;
-  need_dead_target?: boolean;
-  point: number;
-  attack?: number | string;
-  defend?: number | string;
-  tags: string[];
-  image_list: string[];
-  background_color?: string;
-  background_color_hover?: string;
-};
 
 type ResponseMovement = {
   id?: string;
@@ -67,6 +54,16 @@ type TurnResult = {
 type TurnConfig = {
   turn: number;
   player_list: any[];
+};
+
+export {
+  BattleLog,
+  MovementData,
+  ResponseMovement,
+  ResponseMovementMap,
+  PlayerResultMap,
+  TurnResult,
+  TurnConfig,
 };
 
 /*declare class PlayerClass {

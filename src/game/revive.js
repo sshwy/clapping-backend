@@ -5,9 +5,9 @@ class Revive extends HuntingGame {
     super(config);
   }
   /**
-   * @param {ResponseMovementMap} player_movements
-   * @param {TurnConfig} config
-   * @return {TurnResult}
+   * @param {import('../../global').ResponseMovementMap} player_movements
+   * @param {import('../../global').TurnConfig} config
+   * @return {import('../../global').TurnResult}
    * @memberof GainPointByKill
    */
   handleTurn (player_movements, config) {

@@ -5,11 +5,17 @@ const { RoomClass, PlayerClass } = require('./types');
 const game_list = require('./game');
 
 const turn_timeout = 15000;
+
 /**
  * @class Room
  * @extends {RoomClass}
  */
 class Room extends RoomClass {
+  /**
+   * Creates an instance of Room.
+   * @param {number} id 房间编号
+   * @memberof Room
+   */
   constructor(id) {
     super(id);
 
@@ -95,7 +101,7 @@ class Room extends RoomClass {
 
       // Step 1: 获取玩家的所有行动
 
-      /** @type {ResponseMovementMap} */
+      /** @type {import('../global').ResponseMovementMap} */
       const res = await this.requestMovement();
       clearTimeout(this.req_movement_time_limit);
 
@@ -170,7 +176,7 @@ class Room extends RoomClass {
           e.gamePrepare();
         });
 
-        this.players[0].client.roomEmit('room info ingame', this.getInfo());
+        this.players[0].client.roomEmit('room_info_ingame', this.getInfo());
 
         // play
         while (await runTurn());
@@ -179,7 +185,8 @@ class Room extends RoomClass {
         setTimeout(() => { // wait for 5s
           this.stat = RoomStatus.PREPARING;
           this.players.forEach(e => e.quitGame());
-          this.players[0].client.roomEmit('room info', this.getInfo());
+          this.players[0].client.roomEmit('scene_type', 'room_info');
+          this.players[0].client.roomEmit('room_info', this.getInfo());
           resolve('ok');
         }, 3000);
       })();
@@ -206,7 +213,7 @@ class Room extends RoomClass {
           timeout: new Date().getTime() + turn_timeout,
         },
       }));
-      this.players[0].client.roomEmit('room info ingame', this.getInfo());
+      this.players[0].client.roomEmit('room_info_ingame', this.getInfo());
       const checker = setInterval(() => {
         if (this._response_rest_counter === 0) {
           clearInterval(checker);
@@ -230,7 +237,7 @@ class Room extends RoomClass {
             });
           }
         });
-        this.players[0].client.roomEmit('room info ingame', this.getInfo());
+        this.players[0].client.roomEmit('room_info_ingame', this.getInfo());
       }, turn_timeout + 500); // 15s
     });
   }

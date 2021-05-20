@@ -88,21 +88,21 @@ io.on("connection", (socket) => {
     }
   }
 
-  socket.on('room info', () => {
+  socket.on('room_info', () => {
     if (debounce(socket)) return;
-    socket.emit('room info', player.room.getInfo());
+    socket.emit('room_info', player.room.getInfo());
   });
 
   socket.on('ready', () => {
     if (debounce(socket)) return;
     player.getReady();
-    client.roomEmit('room info', player.room.getInfo());
+    client.roomEmit('room_info', player.room.getInfo());
   });
 
   socket.on('cancel ready', () => {
     if (debounce(socket)) return;
     player.cancelReady();
-    client.roomEmit('room info', player.room.getInfo());
+    client.roomEmit('room_info', player.room.getInfo());
   });
 
   socket.on('logout', () => {
@@ -133,9 +133,9 @@ io.on("connection", (socket) => {
       targetPlayer.cancelReady();
     }
     if (targetPlayer.stat === PlayerStatus.ROOMED) {
-      const room = client.player.room;
+      const room = targetPlayer.room;
       room.unregisterPlayer(targetPlayer);
-      targetPlayer.client.socket.to(room.id.toString()).emit('room info', room.getInfo());
+      targetPlayer.client.socket.to(room.id.toString()).emit('room_info', room.getInfo());
       targetPlayer.client.reHandle();
       targetPlayer.client.socket.emit('display_message', new Message('info', '你好像被房主踢了……').toObject());
     }

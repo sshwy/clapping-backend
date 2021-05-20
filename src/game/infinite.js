@@ -3,7 +3,7 @@ const MovementClass = require('./classic').Movement;
 const eps = require('./classic').eps;
 const { MovementGroup } = require('../types');
 
-/** @type {MovementData[]} */
+/** @type {import('../../global').MovementData[]} */
 const MoveData = [
   ...require('./classic').MoveData,
   {
@@ -34,9 +34,9 @@ class Infinite extends Revive2 {
     super(config);
   }
   /**
-   * @param {ResponseMovementMap} player_movements
-   * @param {TurnConfig} config
-   * @return {TurnResult}
+   * @param {import('../../global').ResponseMovementMap} player_movements
+   * @param {import('../../global').TurnConfig} config
+   * @return {import('../../global').TurnResult}
    * @memberof GainPointByKill
    */
   handleTurn (player_movements, config) {

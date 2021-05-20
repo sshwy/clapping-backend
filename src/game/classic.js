@@ -2,7 +2,7 @@ const { MovementClass, MovementGroup, GameClass } = require('../types');
 
 const eps = 0.01;
 
-/** @type {MovementData[]} */
+/** @type {import('../../global').MovementData[]} */
 const MoveData = [{
   id: 0, tags: ['老八秘制小汉堡'],
   title: '拍手', point: -1, attack: 0, defend: 0,
@@ -186,9 +186,9 @@ class Game extends GameClass {
   /**
    * 给出玩家的行动，计算结果
    *
-   * @param {ResponseMovementMap} player_movements
-   * @param {TurnConfig} config
-   * @return {TurnResult}
+   * @param {import('../../global').ResponseMovementMap} player_movements
+   * @param {import('../../global').TurnConfig} config
+   * @return {import('../../global').TurnResult}
    * @memberof Game
    */
   handleTurn (player_movements, config) {
@@ -209,7 +209,7 @@ class Game extends GameClass {
     };
 
     const effect_map = {};
-    /** @type {PlayerResultMap} */
+    /** @type {import('../../global').PlayerResultMap} */
     const result = {};
     /** @type {string[]} */
     const alive = [], deads = [];
@@ -312,8 +312,8 @@ class Game extends GameClass {
   /**
    * 利用 handleTurn 计算的结果检查游戏进度，决定是否需要结束
    *
-   * @param {TurnResult} data
-   * @return {[boolean, TurnResult]} 如果 true 则结束游戏
+   * @param {import('../../global').TurnResult} data
+   * @return {[boolean, import('../../global').TurnResult]} 如果 true 则结束游戏
    * @memberof Game
    */
   detectGameOver (data, config) {

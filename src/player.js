@@ -85,7 +85,7 @@ class Player extends PlayerClass {
         from: this.data.id,
         data: movement,
       });
-      this.client.roomEmit('room info ingame', this.room.getInfo());
+      this.client.roomEmit('room_info_ingame', this.room.getInfo());
       this.tmp_storage = {
         from: this.data.name,
         to: this.room.players.find(e => e.data.id === movement.target)?.data.name,
@@ -112,14 +112,14 @@ class Player extends PlayerClass {
       this.log.info('finish drawing');
     }
     if (data.event_name === 'ready') { // do nothing
-      assert(this.room);
+      assert(Boolean(this.room));
       this.log.info(`ready.`);
       this.room.handleEvent({
         event_name: 'player ready'
       });
     }
     if (data.event_name === 'cancel ready') { // do nothing
-      assert(this.room);
+      assert(Boolean(this.room));
       this.log.info(`not ready.`);
       this.stat = PlayerStatus.ROOMED;
       this.room.handleEvent({
@@ -132,7 +132,7 @@ class Player extends PlayerClass {
     }
   }
   getStatus () {
-    assert(this.room);
+    assert(Boolean(this.room));
     const status = {
       stat: this.stat,
       self: this.data,

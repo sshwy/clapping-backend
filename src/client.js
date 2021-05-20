@@ -50,7 +50,7 @@ class Client extends ClientClass {
       }, () => {
         this.socket.emit('display_message',
           new Message('success', `成功选择游戏 ${this.player.room.game.getName()}`).toObject());
-        this.roomEmitOther('room info', this.player.room.getInfo());
+        this.roomEmitOther('room_info', this.player.room.getInfo());
         this.roomEmitOther('display_message',
           new Message('info', `房主将游戏切换为 ${this.player.room.game.getName()}`).toObject());
       });
@@ -59,7 +59,7 @@ class Client extends ClientClass {
       if (debounce(this.socket)) return;
       roomStore.findRoom(id).registerPlayer(this.player).then(() => {
         this.socket.emit('scene_type', 'room_info');
-        this.roomEmit('room info', this.player.room.getInfo());
+        this.roomEmit('room_info', this.player.room.getInfo());
       }).catch(e => {
         console.log(e);
       });
@@ -68,7 +68,7 @@ class Client extends ClientClass {
       if (debounce(this.socket)) return;
       const room = this.player.room;
       room.unregisterPlayer(this.player);
-      this.socket.to(room.id.toString()).emit('room info', room.getInfo());
+      this.socket.to(room.id.toString()).emit('room_info', room.getInfo());
       this.log.info('quit room', room.id);
       this.reHandle();
     });
@@ -128,7 +128,7 @@ class Client extends ClientClass {
       case PlayerStatus.READY:
         assert(this.player.room);
         this.socket.emit('scene_type', 'room_info');
-        this.socket.emit('room info', this.player.room.getInfo());
+        this.socket.emit('room_info', this.player.room.getInfo());
         break;
       case PlayerStatus.INITIALIZED:
         this.handleRoomListDisplay();
@@ -136,7 +136,7 @@ class Client extends ClientClass {
       default: // gaming
         this.socket.emit('scene_type', 'gaming');
         assert(this.player.room);
-        this.socket.emit('room info ingame', this.player.room.getInfo());
+        this.socket.emit('room_info_ingame', this.player.room.getInfo());
     }
     if (this.player.stat === PlayerStatus.ACTING) {
       this.handleEvent('request movement', this.player.tmp_storage);
