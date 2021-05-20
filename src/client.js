@@ -3,6 +3,7 @@ const { assert } = require("./utils");
 const { PlayerStatus } = require("./vars");
 const { roomStore } = require('./manager');
 const { ClientClass } = require("./types");
+const { Message } = require('./types');
 
 /**
  * @class Client
@@ -15,7 +16,7 @@ class Client extends ClientClass {
     var action_ban = false;
     const debounce = socket => {
       if (action_ban) {
-        socket.emit('display message', 'error', 'WDNMD 能不能给爷死？？？');
+        socket.emit('display_message', new Message('error', 'WDNMD 能不能给爷死？？？').toObject());
         return true;
       } else {
         action_ban = true;
@@ -47,9 +48,11 @@ class Client extends ClientClass {
         event_name: 'choose game',
         game_id: game_id,
       }, () => {
-        this.socket.emit('display message', 'success', `成功选择游戏 ${this.player.room.game.getName()}`);
+        this.socket.emit('display_message',
+          new Message('success', `成功选择游戏 ${this.player.room.game.getName()}`).toObject());
         this.roomEmitOther('room info', this.player.room.getInfo());
-        this.roomEmitOther('display message', 'info', `房主将游戏切换为 ${this.player.room.game.getName()}`);
+        this.roomEmitOther('display_message',
+          new Message('info', `房主将游戏切换为 ${this.player.room.game.getName()}`).toObject());
       });
     });
   }
@@ -65,7 +68,7 @@ class Client extends ClientClass {
         client.socket.emit('submitted movement', config);
       },
       'register room failed': (client) => {
-        client.socket.emit('display message', 'info', '房间正在游戏中，请稍候再加入～');
+        client.socket.emit('display_message', new Message('info', '房间正在游戏中，请稍候再加入～').toObject());
       },
       'game prepare': (client) => {
         client.socket.emit('game prepare');
@@ -78,8 +81,8 @@ class Client extends ClientClass {
     throw new Error(`Unknown event '${event_name}'`);
   }
   handleRoomListDisplay (is_update = false) {
-    if (is_update) this.socket.emit('room list update', roomStore.getAll().map(room => room.getInfo()));
-    else this.socket.emit('room list', roomStore.getAll().map(room => room.getInfo()));
+    if (is_update) this.socket.emit('room_list_update', roomStore.getAll().map(room => room.getInfo()));
+    else this.socket.emit('room_list', roomStore.getAll().map(room => room.getInfo()));
   }
   handleTalk (text) {
     assert(this.player.room);
@@ -108,14 +111,13 @@ class Client extends ClientClass {
         this.socket.emit('room info', this.player.room.getInfo());
         break;
       case PlayerStatus.INITIALIZED:
+        this.handleRoomListDisplay();
         break;
       default: // gaming
         assert(this.player.room);
         this.socket.emit('room info ingame', this.player.room.getInfo());
     }
-    if (this.player.stat === PlayerStatus.INITIALIZED) {
-      this.handleRoomListDisplay();
-    } else if (this.player.stat === PlayerStatus.ACTING) {
+    if (this.player.stat === PlayerStatus.ACTING) {
       this.handleEvent('request movement', this.player.tmp_storage);
     } else if (this.player.stat === PlayerStatus.WATCHING) {
       this.handleEvent('go watching', this.player.tmp_storage);

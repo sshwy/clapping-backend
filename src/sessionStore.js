@@ -1,7 +1,7 @@
 /* abstract */ class SessionStore {
-  findSession(id) {}
-  saveSession(id, session) {}
-  findAllSessions() {}
+  findSession (id) { }
+  saveSession (id, session) { }
+  findAllSessions () { }
 }
 
 class InMemorySessionStore extends SessionStore {
@@ -10,15 +10,16 @@ class InMemorySessionStore extends SessionStore {
     this.sessions = new Map();
   }
 
-  findSession(id) {
+  findSession (id) {
     return this.sessions.get(id);
   }
 
-  saveSession(id, session) {
+  saveSession (id, session) {
     this.sessions.set(id, session);
   }
 
-  findAllSessions() {
+  findAllSessions () {
+    // @ts-ignore
     return [...this.sessions.values()];
   }
 }

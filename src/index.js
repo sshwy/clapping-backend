@@ -1,11 +1,12 @@
 const { io } = require('./server');
 const game_list = require('./game');
-
 const sessionStore = require('./sessionStore');
 const { playerStore, roomStore } = require('./manager');
 const Client = require("./client");
 const { PlayerStatus } = require("./vars");
 const { randomId } = require("./utils");
+const { Message } = require('./types');
+const socketLogger = require('./logger').getLogger('socket');
 
 const parseUsername = name => {
   try {
@@ -75,7 +76,7 @@ io.on("connection", (socket) => {
   var action_ban = false;
   const debounce = socket => {
     if (action_ban) {
-      socket.emit('display message', 'error', 'WDNMD 能不能给爷死？？？');
+      socket.emit('display_message', new Message('error', 'WDNMD 能不能给爷死？？？').toObject());
       return true;
     } else {
       action_ban = true;
@@ -117,7 +118,7 @@ io.on("connection", (socket) => {
     const room = client.player.room;
     room.unregisterPlayer(client.player);
     socket.to(room.id.toString()).emit('room info', room.getInfo());
-    console.log('quit room', room.id);
+    client.log.info('quit room', room.id);
     client.reHandle();
   });
 
@@ -125,9 +126,9 @@ io.on("connection", (socket) => {
     if (debounce(socket)) return;
     if (client.player.stat === PlayerStatus.INITIALIZED) {
       playerStore.deletePlayer(socket.userID);
-      socket.emit('finish logout');
+      socket.emit('finish_logout');
     } else {
-      client.socket.emit('display message', 'error', '你 TM 注销个毛线，先给爷退房再说');
+      client.socket.emit('display_message', new Message('error', '你 TM 注销个毛线，先给爷退房再说').toObject());
     }
   });
 
@@ -138,7 +139,6 @@ io.on("connection", (socket) => {
 
   socket.on('kick player', id => {
     if (debounce(socket)) return;
-    console.log(id);
     const targetPlayer = playerStore.findPlayer(id);
     if (!targetPlayer) {
       throw new Error(`Can't find player with id ${id}`);
@@ -154,12 +154,11 @@ io.on("connection", (socket) => {
       room.unregisterPlayer(targetPlayer);
       targetPlayer.client.socket.to(room.id.toString()).emit('room info', room.getInfo());
       targetPlayer.client.reHandle();
-      targetPlayer.client.socket.emit('display message', 'info', '你好像被房主踢了……');
+      targetPlayer.client.socket.emit('display_message', new Message('info', '你好像被房主踢了……').toObject());
     }
   });
   socket.on('hurry player', id => {
     if (debounce(socket)) return;
-    console.log(id);
     const targetPlayer = playerStore.findPlayer(id);
     if (!targetPlayer) {
       throw new Error(`Can't find player with id ${id}`);
@@ -171,7 +170,7 @@ io.on("connection", (socket) => {
       return;
     }
     if (targetPlayer.stat === PlayerStatus.ROOMED) {
-      targetPlayer.client.socket.emit('display message', 'info', '房主催你准备啦！');
+      targetPlayer.client.socket.emit('display_message', new Message('info', '房主催你准备啦！').toObject());
     }
   });
 
@@ -181,6 +180,6 @@ io.on("connection", (socket) => {
   });
 
   socket.onAny((event, ...args) => {
-    console.log('[event]', event, args);
+    socketLogger.debug('[event]', event, args);
   });
 });
