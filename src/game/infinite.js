@@ -3,6 +3,7 @@ const MovementClass = require('./classic').Movement;
 const eps = require('./classic').eps;
 const { MovementGroup } = require('../types');
 
+/** @type {MovementData[]} */
 const MoveData = [
   ...require('./classic').MoveData,
   {

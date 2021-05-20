@@ -25,10 +25,15 @@ type MovementData = {
   id: number;
   title: string | object;
   description: string | object;
-  need_target: boolean;
+  need_target?: boolean;
+  need_dead_target?: boolean;
   point: number;
-  attack?: number;
-  defend?: number;
+  attack?: number | string;
+  defend?: number | string;
+  tags: string[];
+  image_list: string[];
+  background_color?: string;
+  background_color_hover?: string;
 };
 
 type ResponseMovement = {

@@ -2,6 +2,7 @@ const { MovementClass, MovementGroup, GameClass } = require('../types');
 
 const eps = 0.01;
 
+/** @type {MovementData[]} */
 const MoveData = [{
   id: 0, tags: ['老八秘制小汉堡'],
   title: '拍手', point: -1, attack: 0, defend: 0,

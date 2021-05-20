@@ -135,6 +135,10 @@ class MovementClass {
   needTarget () {
     return Boolean(this.config.need_target);
   }
+  /**
+   * @return {MovementData} 
+   * @memberof MovementClass
+   */
   toJSONObject () {
     return deepClone(this.config);
   }
@@ -244,6 +248,33 @@ class GameClass {
   }
 };
 
+/**
+ * 消息
+ *
+ * @class Message
+ */
+class Message {
+  /**
+   * Creates an instance of Message.
+   * @param {'error' | 'success' | 'info'} type 消息类型
+   * @param {string} text 消息内容
+   * @param {number} [delay=3000] 消息的展示时间，默认值 3000 (ms)
+   * @memberof Message
+   */
+  constructor(type, text, delay = 3000) {
+    this.type = type;
+    this.text = text;
+    this.delay = delay;
+  }
+  toObject () {
+    return {
+      type: this.type,
+      text: this.text,
+      delay: this.delay,
+    }
+  }
+};
+
 module.exports = {
   PlayerClass,
   ClientClass,
@@ -251,4 +282,5 @@ module.exports = {
   MovementClass,
   MovementGroup,
   GameClass,
+  Message,
 };
