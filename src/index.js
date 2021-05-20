@@ -7,6 +7,7 @@ const { PlayerStatus } = require("./vars");
 const { randomId } = require("./utils");
 const { Message } = require('./types');
 const socketLogger = require('./logger').getLogger('socket');
+const util = require('util');
 
 const parseUsername = name => {
   try {
@@ -104,24 +105,6 @@ io.on("connection", (socket) => {
     client.roomEmit('room info', player.room.getInfo());
   });
 
-  socket.on('select room', id => {
-    if (debounce(socket)) return;
-    roomStore.findRoom(id).registerPlayer(player).then(() => {
-      client.roomEmit('room info', player.room.getInfo());
-    }).catch(e => {
-      console.log(e);
-    });
-  });
-
-  socket.on('quit room', () => {
-    if (debounce(socket)) return;
-    const room = client.player.room;
-    room.unregisterPlayer(client.player);
-    socket.to(room.id.toString()).emit('room info', room.getInfo());
-    client.log.info('quit room', room.id);
-    client.reHandle();
-  });
-
   socket.on('logout', () => {
     if (debounce(socket)) return;
     if (client.player.stat === PlayerStatus.INITIALIZED) {
@@ -157,6 +140,7 @@ io.on("connection", (socket) => {
       targetPlayer.client.socket.emit('display_message', new Message('info', '你好像被房主踢了……').toObject());
     }
   });
+
   socket.on('hurry player', id => {
     if (debounce(socket)) return;
     const targetPlayer = playerStore.findPlayer(id);
@@ -180,6 +164,6 @@ io.on("connection", (socket) => {
   });
 
   socket.onAny((event, ...args) => {
-    socketLogger.debug('[event]', event, args);
+    socketLogger.debug(`[event] ${event} ${util.inspect(args)}`);
   });
 });

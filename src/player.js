@@ -55,7 +55,7 @@ class Player extends PlayerClass {
 
     if (data.event_name === 'watcher draw') {
       assert(from === 'roomer');
-      this.log.info('drawing');
+      this.log.debug('drawing');
       this.tmp_storage = {
         ...data,
         game_id: this.room.game_id,
@@ -65,7 +65,7 @@ class Player extends PlayerClass {
     if (data.event_name === 'player draw') {
       assert(from === 'roomer');
       this.applyMovement(data.player_result[this.getId()]);
-      this.log.info('drawing');
+      this.log.debug('drawing');
       this.tmp_storage = {
         ...data,
         game_id: this.room.game_id,

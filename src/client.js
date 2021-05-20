@@ -55,6 +55,23 @@ class Client extends ClientClass {
           new Message('info', `房主将游戏切换为 ${this.player.room.game.getName()}`).toObject());
       });
     });
+    this.socket.on('select room', id => {
+      if (debounce(this.socket)) return;
+      roomStore.findRoom(id).registerPlayer(this.player).then(() => {
+        this.socket.emit('scene_type', 'room_info');
+        this.roomEmit('room info', this.player.room.getInfo());
+      }).catch(e => {
+        console.log(e);
+      });
+    });
+    this.socket.on('quit room', () => {
+      if (debounce(this.socket)) return;
+      const room = this.player.room;
+      room.unregisterPlayer(this.player);
+      this.socket.to(room.id.toString()).emit('room info', room.getInfo());
+      this.log.info('quit room', room.id);
+      this.reHandle();
+    });
   }
   handleEvent (event_name, config) {
     const handlers = {
@@ -72,6 +89,7 @@ class Client extends ClientClass {
       },
       'game prepare': (client) => {
         client.socket.emit('game prepare');
+        client.socket.emit('scene_type', 'gaming');
       },
       'go watching': (client, config) => {
         client.socket.emit(config);
@@ -81,6 +99,7 @@ class Client extends ClientClass {
     throw new Error(`Unknown event '${event_name}'`);
   }
   handleRoomListDisplay (is_update = false) {
+    this.socket.emit('scene_type', 'room_list');
     if (is_update) this.socket.emit('room_list_update', roomStore.getAll().map(room => room.getInfo()));
     else this.socket.emit('room_list', roomStore.getAll().map(room => room.getInfo()));
   }
@@ -102,18 +121,20 @@ class Client extends ClientClass {
    * Detect current status and do things again (for reconnection)
    */
   reHandle () {
-    this.log.info(`invoke rehandle (stat: ${this.player.stat})`);
+    this.log.debug(`invoke rehandle (stat: ${this.player.stat})`);
     assert(this.player);
     switch (this.player.stat) {
       case PlayerStatus.ROOMED:
       case PlayerStatus.READY:
         assert(this.player.room);
+        this.socket.emit('scene_type', 'room_info');
         this.socket.emit('room info', this.player.room.getInfo());
         break;
       case PlayerStatus.INITIALIZED:
         this.handleRoomListDisplay();
         break;
       default: // gaming
+        this.socket.emit('scene_type', 'gaming');
         assert(this.player.room);
         this.socket.emit('room info ingame', this.player.room.getInfo());
     }

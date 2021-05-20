@@ -17,7 +17,6 @@ class Revive2 extends Revive {
       //@ts-ignore
       if (this.getMovementById(i.move).isSweeps() && data.player_result[id].hit.length === 0) {
         data.player_result[id].filtered_injury = 1;
-        data.player_result[id].hitted.push('刃波');
         data.log.unshift({
           type: 'msg',
           id: `sweepkill-${id}-${config.turn}`,
